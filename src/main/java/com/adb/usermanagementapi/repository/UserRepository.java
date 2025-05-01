@@ -11,7 +11,6 @@ public interface UserRepository {
     Long findIdByUsername(String username);
     Long findIdByEmail(String email);
     User findByUsername(String username);
-    User findByEmail(String email);
     List<User> findAll();
     void updateUser(User user);
     void updatePassword(String username, String passwordHash);

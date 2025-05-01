@@ -80,17 +80,6 @@ public class UserRepositoryImpl implements UserRepository
     }
 
     @Override
-    public User findByEmail(String email) {
-        String sql = "SELECT id, username, email, password_hash, created_at FROM users WHERE username = ?";
-
-        try {
-            return jdbcTemplate.queryForObject(sql, userRowMapper(), email);
-        } catch (org.springframework.dao.EmptyResultDataAccessException e){
-            return null;
-        }
-    }
-
-    @Override
     public List<User> findAll() {
         String sql = "SELECT id, username, email, password_hash, created_at FROM users";
 
