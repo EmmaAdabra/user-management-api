@@ -165,4 +165,13 @@ public class UserRepositoryTest {
         assertNotNull(userId, "user ID should be found by email");
         assertTrue(userId > 0, "user ID should be positive");
     }
+
+    @Test
+    void findIdByEmail_userDoesNotExists_returnsNull(){
+        // Act
+        Long userId = userRepository.findIdByUsername("nonexistentuser@example.com");
+
+        // Assert
+        assertNull(userId, "None-existence user should return null by email");
+    }
 }
