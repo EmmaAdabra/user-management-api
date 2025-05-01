@@ -89,8 +89,6 @@ public class UserRepositoryTest {
             String username = "testuser";
             String email = "testuser@example.com";
             String passwordHash = "hashedpassword";
-
-            //Act
             userRepository.save(username, email, passwordHash);
 
             // Act
@@ -112,8 +110,6 @@ public class UserRepositoryTest {
         String username = "testuser";
         String email = "testuser@example.com";
         String passwordHash = "hashedpassword";
-
-        //Act
         userRepository.save(username, email, passwordHash);
 
         // Act
@@ -127,5 +123,21 @@ public class UserRepositoryTest {
         assertFalse(userRepository.existsByUsername("nonexistentuser@example.com"),
                 "Should return false, " +
                         "user not found or exist by email");
+    }
+
+    @Test
+    void findIdByUsername_userExists_returnsId(){
+        // Arrange
+        String username = "testuser";
+        String email = "testuser@example.com";
+        String passwordHash = "hashedpassword";
+        userRepository.save(username, email, passwordHash);
+
+        //Act
+        Long userId = userRepository.findIdByUsername(username);
+
+        // Assert
+        assertNotNull(userId, "user ID should be found by username");
+        assertTrue(userId > 0, "user ID should be positive");
     }
 }
