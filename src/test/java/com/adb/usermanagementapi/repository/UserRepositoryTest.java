@@ -193,4 +193,10 @@ public class UserRepositoryTest {
         assertEquals(passwordHash, user.getPasswordHash(), "passwordHash should match");
         assertNotNull(user.getCreatedAt(), "Created at should be set");
     }
+    
+    @Test
+    void findByUsername_userDoesNotExist_returnsNull() {
+        User user = userRepository.findByUsername("nonexistent");
+        assertNull(user, "Non-existent user should return null");
+    }
 }
