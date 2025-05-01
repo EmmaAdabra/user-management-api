@@ -69,7 +69,7 @@ public class UserRepositoryImpl implements UserRepository
     }
 
     @Override
-    public User findByUserName(String username) {
+    public User findByUsername(String username) {
         String sql = "SELECT id, username, email, password_hash, created_at FROM users WHERE username = ?";
 
         try {

@@ -10,7 +10,7 @@ public interface UserRepository {
     boolean existsByEmail(String email);
     Long findIdByUsername(String username);
     Long findIdByEmail(String email);
-    User findByUserName(String username);
+    User findByUsername(String username);
     List<User> findAll();
     void updateUser(User user);
     void updatePassword(String username, String passwordHash);
