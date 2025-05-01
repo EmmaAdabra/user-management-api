@@ -149,4 +149,20 @@ public class UserRepositoryTest {
         // Assert
         assertNull(userId, "None-existence user should return null by username");
     }
+
+    @Test
+    void findIdByEmail_userExists_returnsId(){
+        // Arrange
+        String username = "testuser";
+        String email = "testuser@example.com";
+        String passwordHash = "hashedpassword";
+        userRepository.save(username, email, passwordHash);
+
+        //Act
+        Long userId = userRepository.findIdByEmail(email);
+
+        // Assert
+        assertNotNull(userId, "user ID should be found by email");
+        assertTrue(userId > 0, "user ID should be positive");
+    }
 }
