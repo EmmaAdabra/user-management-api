@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 // load beans form the application isolated test context for the tests
@@ -193,10 +195,16 @@ public class UserRepositoryTest {
         assertEquals(passwordHash, user.getPasswordHash(), "passwordHash should match");
         assertNotNull(user.getCreatedAt(), "Created at should be set");
     }
-    
+
     @Test
     void findByUsername_userDoesNotExist_returnsNull() {
         User user = userRepository.findByUsername("nonexistent");
         assertNull(user, "Non-existent user should return null");
+    }
+
+    @Test
+    void findAll_noUser_returnEmptyList(){
+        List<User> users = userRepository.findAll();
+        assertTrue(users.isEmpty(), "Should return empty list when no users exist");
     }
 }
