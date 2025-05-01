@@ -82,4 +82,27 @@ public class UserRepositoryTest {
                 },
                 "Should throw an exception, email already exist");
     }
+
+    @Test
+        void userExistByUsername_userExist_returnsTrue(){
+            // Arrange
+            String username = "testuser";
+            String email = "testuser@example.com";
+            String passwordHash = "hashedpassword";
+
+            //Act
+            userRepository.save(username, email, passwordHash);
+
+            // Act
+            assertTrue(userRepository.existsByUsername(username), "should return true, user exist by " +
+                    "username");
+    }
+
+    @Test
+    void userExistByUsername_userDoesNotExist_returnsFalse(){
+        // Act
+        assertFalse(userRepository.existsByUsername("NonexistentUser"),
+                "Should return false, " +
+                "username not found or exist");
+    }
 }
