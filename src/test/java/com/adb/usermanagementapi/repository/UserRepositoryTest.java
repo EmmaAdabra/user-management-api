@@ -231,4 +231,23 @@ public class UserRepositoryTest {
         assertEquals("user1@example.com", user1.getEmail(), "user1 email should match");
         assertEquals("user2@example.com", user2.getEmail(), "user2 email should match");
     }
+
+    @Test
+    void updateUser_success() {
+        String username = "testuser";
+        String email = "testuser@example.com";
+        String passwordHash = "hashedpassword";
+        userRepository.save(username, email, passwordHash);
+
+        User existingUser = userRepository.findByUsername(username);
+        User updatedUser = new User(existingUser.getId(), "newuser", "newuser@example.com", existingUser.getPasswordHash(), existingUser.getCreatedAt());
+        userRepository.updateUser(updatedUser);
+
+        User foundUser = userRepository.findByUsername("newuser");
+        assertNull(userRepository.findByUsername("testuser"), "Old username should no longer be found");
+        assertNotNull(foundUser, "Updated user should be found");
+        assertEquals("newuser", foundUser.getUsername(), "Username should be updated");
+        assertEquals("newuser@example.com", foundUser.getEmail(), "Email should be updated");
+        assertEquals(passwordHash, foundUser.getPasswordHash(), "Password hash should remain unchanged");
+    }
 }
