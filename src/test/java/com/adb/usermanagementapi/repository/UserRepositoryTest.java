@@ -105,4 +105,19 @@ public class UserRepositoryTest {
                 "Should return false, " +
                 "username not found or exist");
     }
+
+    @Test
+    void userExistByEmail_emailExist_returnsTrue(){
+        // Arrange
+        String username = "testuser";
+        String email = "testuser@example.com";
+        String passwordHash = "hashedpassword";
+
+        //Act
+        userRepository.save(username, email, passwordHash);
+
+        // Act
+        assertTrue(userRepository.existsByUsername(email), "should return true, " +
+                "user exist by email");
+    }
 }
