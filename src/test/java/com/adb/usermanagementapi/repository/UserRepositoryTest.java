@@ -50,4 +50,36 @@ public class UserRepositoryTest {
         assertNotNull(userIdByEmail, "User ID should be found by email");
         assertEquals(userIdByUsername, userIdByEmail, "User ID should match");
     }
+
+    @Test
+    void saveUser_duplicateUsername_throwsException(){
+        // Arrange
+        String username = "testuser";
+        String email = "testuser@example.com";
+        String passwordHash = "hashedpassword";
+
+        // Act
+        userRepository.save(username, email, passwordHash);
+
+        // Assert
+        assertThrows(org.springframework.dao.DataIntegrityViolationException.class, () -> {
+            userRepository.save(username, "differentemail@@example.com", "differentHash");
+        }, "Should throw exception for duplicate username");
+    }
+
+    @Test
+    void saveUser_duplicateEmail_throwsException(){
+        // Arrange
+        String username = "testuser";
+        String email = "testuser@example.com";
+        String passwordHash = "hashedpassword";
+
+        // Act
+        userRepository.save(username, email, passwordHash);
+
+        assertThrows(org.springframework.dao.DataIntegrityViolationException.class, () -> {
+            userRepository.save("differentUser", email, "differentHash");
+                },
+                "Should throw an exception, email already exist");
+    }
 }
