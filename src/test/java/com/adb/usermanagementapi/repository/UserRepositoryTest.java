@@ -1,6 +1,7 @@
 package com.adb.usermanagementapi.repository;
 
 import com.adb.usermanagementapi.config.TestConfig;
+import com.adb.usermanagementapi.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -173,5 +174,23 @@ public class UserRepositoryTest {
 
         // Assert
         assertNull(userId, "None-existence user should return null by email");
+    }
+
+    @Test
+    void findByUsername_UserExists_returnsUser(){
+        // Arrange
+        String username = "testuser";
+        String email = "testuser@example.com";
+        String passwordHash = "hashedpassword";
+        userRepository.save(username, email, passwordHash);
+
+        // Act
+        User user = userRepository.findByUsername(username);
+
+        assertNotNull(user, "User should be found");
+        assertEquals(username, user.getUsername(), "username should match");
+        assertEquals(email, user.getEmail(), "email should match");
+        assertEquals(passwordHash, user.getPasswordHash(), "passwordHash should match");
+        assertNotNull(user.getCreatedAt(), "Created at should be set");
     }
 }
