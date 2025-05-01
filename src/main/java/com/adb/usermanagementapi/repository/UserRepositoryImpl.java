@@ -83,11 +83,7 @@ public class UserRepositoryImpl implements UserRepository
     public List<User> findAll() {
         String sql = "SELECT id, username, email, password_hash, created_at FROM users";
 
-        try {
-            return jdbcTemplate.query(sql, userRowMapper());
-        } catch (org.springframework.dao.EmptyResultDataAccessException e){
-            return null;
-        }
+        return jdbcTemplate.query(sql, userRowMapper());
     }
 
     @Override
