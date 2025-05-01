@@ -207,4 +207,28 @@ public class UserRepositoryTest {
         List<User> users = userRepository.findAll();
         assertTrue(users.isEmpty(), "Should return empty list when no users exist");
     }
+
+    @Test
+    void findAll_multipleUsers_returnsAllUsers() {
+        // Arrange
+        userRepository.save("user1", "user1@example.com", "hash1");
+        userRepository.save("user2", "user2@example.com", "hash2");
+
+        // Act
+        List<User> users = userRepository.findAll();
+
+        // Assert
+        assertEquals(2, users.size(), "users be total of two users");
+
+        // Arrange
+        User user1 =
+                users.stream().filter(u -> u.getUsername().equals("user1")).findFirst().orElse(null);
+        User user2 =
+                users.stream().filter(u -> u.getUsername().equals("user2")).findFirst().orElse(null);
+
+        assertNotNull(user1, "user1 should be found");
+        assertNotNull(user2, "user1 should be found");
+        assertEquals("user1@example.com", user1.getEmail(), "user1 email should match");
+        assertEquals("user2@example.com", user2.getEmail(), "user2 email should match");
+    }
 }
