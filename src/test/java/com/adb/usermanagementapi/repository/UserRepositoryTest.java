@@ -40,5 +40,14 @@ public class UserRepositoryTest {
                 "should be found, after saving");
         assertTrue(userRepository.existsByEmail(email), "User with the - " + email + " should " +
                 "be found, after saving");
+
+        // Act
+        Long userIdByUsername = userRepository.findIdByUsername(username);
+        Long userIdByEmail = userRepository.findIdByEmail(email);
+
+        // Assert
+        assertNotNull(userIdByUsername, "User ID should be found by username");
+        assertNotNull(userIdByEmail, "User ID should be found by email");
+        assertEquals(userIdByUsername, userIdByEmail, "User ID should match");
     }
 }
