@@ -107,7 +107,7 @@ public class UserRepositoryImpl implements UserRepository
     }
 
     @Override
-    public void deleteUser(String username) {
+    public void deleteByUsername(String username) {
         String sql = "DELETE FROM users WHERE username = ?";
         int count = jdbcTemplate.update(sql, username);
 
