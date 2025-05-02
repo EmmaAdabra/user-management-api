@@ -1,5 +1,7 @@
 package com.adb.usermanagementapi.config;
 
+import com.adb.usermanagementapi.repository.LoginAttemptsRepository;
+import com.adb.usermanagementapi.repository.LoginAttemptsRepositoryImpl;
 import com.adb.usermanagementapi.repository.UserRepository;
 import com.adb.usermanagementapi.repository.UserRepositoryImpl;
 import org.springframework.context.annotation.Bean;
@@ -30,5 +32,10 @@ public class TestConfig {
     @Bean
     public UserRepository userRepository(JdbcTemplate jdbcTemplate){
         return new UserRepositoryImpl(jdbcTemplate);
+    }
+
+    @Bean
+    public LoginAttemptsRepository loginAttemptsRepository(JdbcTemplate jdbcTemplate){
+        return new LoginAttemptsRepositoryImpl(jdbcTemplate);
     }
 }
