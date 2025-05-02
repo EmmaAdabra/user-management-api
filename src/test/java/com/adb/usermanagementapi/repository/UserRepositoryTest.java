@@ -275,9 +275,8 @@ public class UserRepositoryTest {
 
     @Test
     void updatePassword_userNotFound_throwsException() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            userRepository.updatePassword("nonexistent", "newhashedpassword");
-        }, "Should throw exception for non-existent user");
+        assertThrows(IllegalArgumentException.class, () ->
+            userRepository.updatePassword("nonexistent", "newhashedpassword"), "Should throw exception for non-existent user");
     }
 
     @Test
@@ -292,4 +291,11 @@ public class UserRepositoryTest {
         assertFalse(userRepository.existsByUsername(username), "User should be deleted");
         assertFalse(userRepository.existsByEmail(email), "User email should be deleted");
     }
+
+    @Test
+    void deleteByUsername_userNotFound_throwsException() {
+        assertThrows(IllegalArgumentException.class, () -> userRepository.deleteByUsername("nonexistent"),
+                "Should throw exception for non-existent user");
+    }
+
 }
