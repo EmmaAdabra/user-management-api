@@ -256,4 +256,21 @@ public class UserRepositoryTest {
                 ".com", "hashedpassword", null);
         assertThrows(IllegalArgumentException.class, () -> userRepository.updateUser(noneExistenceUser), "Should throw exception for non-existent user");
     }
+
+    @Test
+    void updatePassword_success(){
+        String username = "testuser";
+        String email = "testuser@example.com";
+        String passwordHash = "hashedpassword";
+        userRepository.save(username, email, passwordHash);
+
+        String updatedPassword = "newHashPassword";
+        userRepository.updatePassword(username, updatedPassword);
+
+        User user = userRepository.findByUsername(username);
+        assertNotNull(user, "user should be found");
+        assertEquals(updatedPassword, user.getPasswordHash(), "updatedPassword should match use " +
+                "passwordhash");
+    }
+
 }
