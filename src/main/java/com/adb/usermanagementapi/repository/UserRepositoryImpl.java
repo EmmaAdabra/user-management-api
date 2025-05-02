@@ -4,6 +4,7 @@ import com.adb.usermanagementapi.model.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class UserRepositoryImpl implements UserRepository
@@ -113,6 +114,29 @@ public class UserRepositoryImpl implements UserRepository
 
         if(count == 0){
             throw new IllegalArgumentException("user with username - " + username + " not found");
+        }
+    }
+
+    @Override
+    public int countFailedAttemptsInLastTwoMinutes(Long userId) {
+        String sql = "SELECT COUNT(*) FROM login_attempts WHERE user_id = ? AND success = ? AND " +
+                "attempt_time >= ?";
+        LocalDateTime twoMinutesAgo = LocalDateTime.now().minusMinutes(2);
+        return jdbcTemplate.queryForObject(sql, Integer.class, userId, false, twoMinutesAgo);
+    }
+
+    @Override
+    public boolean isUserLocked(String username) {
+        String sql = "SELECT is_locked FROM users WHERE username = ?";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, username);
+    }
+
+    @Override
+    public void setUserLocked(String username, boolean locked) {
+        String sql = "UPDATE users SET is_locked = ? WHERE username = ?";
+        int rows = jdbcTemplate.update(sql, locked, username);
+        if (rows == 0) {
+            throw new IllegalArgumentException("User not found: " + username);
         }
     }
 }
