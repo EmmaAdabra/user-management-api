@@ -273,4 +273,23 @@ public class UserRepositoryTest {
                 "passwordhash");
     }
 
+    @Test
+    void updatePassword_userNotFound_throwsException() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            userRepository.updatePassword("nonexistent", "newhashedpassword");
+        }, "Should throw exception for non-existent user");
+    }
+
+    @Test
+    void deleteByUsername_success() {
+        String username = "testuser";
+        String email = "testuser@example.com";
+        String passwordHash = "hashedpassword";
+        userRepository.save(username, email, passwordHash);
+
+        userRepository.deleteByUsername(username);
+
+        assertFalse(userRepository.existsByUsername(username), "User should be deleted");
+        assertFalse(userRepository.existsByEmail(email), "User email should be deleted");
+    }
 }
