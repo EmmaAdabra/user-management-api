@@ -118,14 +118,6 @@ public class UserRepositoryImpl implements UserRepository
     }
 
     @Override
-    public int countFailedAttemptsInLastTwoMinutes(Long userId) {
-        String sql = "SELECT COUNT(*) FROM login_attempts WHERE user_id = ? AND success = ? AND " +
-                "attempt_time >= ?";
-        LocalDateTime twoMinutesAgo = LocalDateTime.now().minusMinutes(2);
-        return jdbcTemplate.queryForObject(sql, Integer.class, userId, false, twoMinutesAgo);
-    }
-
-    @Override
     public boolean isUserLocked(String username) {
         String sql = "SELECT is_locked FROM users WHERE username = ?";
         return jdbcTemplate.queryForObject(sql, Boolean.class, username);
