@@ -66,9 +66,8 @@ public class UserRepositoryTest {
         userRepository.save(username, email, passwordHash);
 
         // Assert
-        assertThrows(org.springframework.dao.DataIntegrityViolationException.class, () -> {
-            userRepository.save(username, "differentemail@@example.com", "differentHash");
-        }, "Should throw exception for duplicate username");
+        assertThrows(org.springframework.dao.DataIntegrityViolationException.class, () ->
+            userRepository.save(username, "differentemail@@example.com", "differentHash"), "Should throw exception for duplicate username");
     }
 
     @Test
@@ -81,9 +80,8 @@ public class UserRepositoryTest {
         // Act
         userRepository.save(username, email, passwordHash);
 
-        assertThrows(org.springframework.dao.DataIntegrityViolationException.class, () -> {
-            userRepository.save("differentUser", email, "differentHash");
-                },
+        assertThrows(org.springframework.dao.DataIntegrityViolationException.class, () ->
+            userRepository.save("differentUser", email, "differentHash"),
                 "Should throw an exception, email already exist");
     }
 
@@ -256,8 +254,6 @@ public class UserRepositoryTest {
     void updateUser_userNotFound_throwsException(){
         User noneExistenceUser = new User(999L, "noneExistenceUser", "noneExistenceUser@example" +
                 ".com", "hashedpassword", null);
-        assertThrows(IllegalArgumentException.class, () -> {
-            userRepository.updateUser(noneExistenceUser);
-        }, "Should throw exception for non-existent user");
+        assertThrows(IllegalArgumentException.class, () -> userRepository.updateUser(noneExistenceUser), "Should throw exception for non-existent user");
     }
 }
