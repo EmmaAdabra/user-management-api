@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -249,5 +250,14 @@ public class UserRepositoryTest {
         assertEquals("newuser", foundUser.getUsername(), "Username should be updated");
         assertEquals("newuser@example.com", foundUser.getEmail(), "Email should be updated");
         assertEquals(passwordHash, foundUser.getPasswordHash(), "Password hash should remain unchanged");
+    }
+
+    @Test
+    void updateUser_userNotFound_throwsException(){
+        User noneExistenceUser = new User(999L, "noneExistenceUser", "noneExistenceUser@example" +
+                ".com", "hashedpassword", null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            userRepository.updateUser(noneExistenceUser);
+        }, "Should throw exception for non-existent user");
     }
 }
