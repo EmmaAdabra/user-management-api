@@ -7,8 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringJUnitConfig(TestConfig.class)
 public class LoginAttemptsRepositoryTest {
@@ -67,7 +66,7 @@ public class LoginAttemptsRepositoryTest {
         // Assert: Check count of failed login attempts
         String countSql = "SELECT COUNT(*) FROM login_attempts WHERE user_id = ? AND success = false";
         Integer count = jdbcTemplate.queryForObject(countSql, Integer.class, userId);
-        assertEquals(2, count, "One failed attempt should be logged");
+        assertEquals(2, count, "Two failed attempt should be logged");
 
         // Additional test
         String detailSql = "SELECT success, user_id FROM login_attempts WHERE user_id = ? " +
@@ -78,6 +77,35 @@ public class LoginAttemptsRepositoryTest {
         }, userId);
 
         assertEquals(userId, result[0], "user ID should match");
-        assertFalse((Boolean) result[1], "Attempt success should be false");
+        assertFalse((Boolean) result[1], "Success should be false");
+    }
+
+    @Test
+    void logLoginAttempt_successfulAttempt_logsCorrectly(){
+        // Arrange
+        String username = "testuser";
+        userRepository.save(username, "testuser@example.com", "hashedpassword");
+        Long userId = userRepository.findIdByUsername(username);
+
+        // Act
+        loginAttemptsRepository.logLoginAttempt(userId, true);
+        loginAttemptsRepository.logLoginAttempt(userId, false);
+        loginAttemptsRepository.logLoginAttempt(userId, true);
+
+        // Assert: Check count of failed login attempts
+        String countSql = "SELECT COUNT(*) FROM login_attempts WHERE user_id = ? AND success = true";
+        Integer count = jdbcTemplate.queryForObject(countSql, Integer.class, userId);
+        assertEquals(2, count, "Two successful attempt should be logged");
+
+        // Additional test
+        String detailSql = "SELECT success, user_id FROM login_attempts WHERE user_id = ? " +
+                "ORDER BY  attempt_time DESC LIMIT 1";
+        Object[] result = jdbcTemplate.queryForObject(detailSql, (rs, rowNum) -> new Object[]{
+                rs.getLong("user_id"),
+                rs.getBoolean("success")
+        }, userId);
+
+        assertEquals(userId, result[0], "user ID should match");
+        assertTrue((Boolean) result[1], "Success should be true");
     }
 }
