@@ -1,6 +1,7 @@
 package com.adb.usermanagementapi.repository;
 
 import com.adb.usermanagementapi.config.TestConfig;
+import com.adb.usermanagementapi.util.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,5 +31,22 @@ public class LoginAttemptsRepositoryTest {
 
         int count = loginAttemptsRepository.countFailedAttemptsInLastTwoMinutes(userId);
         assertEquals(0, count, "No login attempts should return zero");
+    }
+
+    @Test
+    void countFailedAttemptsInLastTwoMinutes_multipleFailedAttempts_returnsCorrectCount() {
+        // Arrange
+        String username = "testuser";
+        userRepository.save(username, "testuser@example.com", "hashedpassword");
+        Long userId = userRepository.findIdByUsername(username);
+        loginAttemptsRepository.logLoginAttempt(userId, false);
+        loginAttemptsRepository.logLoginAttempt(userId, true);
+        loginAttemptsRepository.logLoginAttempt(userId, false);
+
+        // Act
+        int count = loginAttemptsRepository.countFailedAttemptsInLastTwoMinutes(userId);
+
+        // Assert
+        assertEquals(2, count, "Should count only failed attempts within 2 minutes");
     }
 }
