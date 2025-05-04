@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
+import java.sql.Timestamp;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringJUnitConfig(TestConfig.class)
@@ -107,5 +109,61 @@ public class LoginAttemptsRepositoryTest {
 
         assertEquals(userId, result[0], "user ID should match");
         assertTrue((Boolean) result[1], "Success should be true");
+    }
+
+    @Test
+    void lastFailedLoginAttempt_shouldReturnLatestFailedAttempt_whenFailuresExist() {
+        String username = "testuser";
+        String email = "testuser@example.com";
+        String passwordHash = "hashedpassword";
+
+        Timestamp createdAt = Timestamp.valueOf("2025-02-05 10:00:00");
+        Timestamp failedTime1 = Timestamp.valueOf("2025-04-01 08:00:00");
+        Timestamp failedTime2 = Timestamp.valueOf("2025-04-02 09:30:00"); // latest
+        Timestamp successTime = Timestamp.valueOf("2025-04-03 11:00:00");
+
+        insertUser(username, email, passwordHash);
+
+        Long userId = userRepository.findIdByUsername(username);
+        insertLoginAttempt(userId, failedTime1, false);
+        insertLoginAttempt(userId, failedTime2, false);
+        insertLoginAttempt(userId, successTime, true);
+
+        Timestamp result = loginAttemptsRepository.lastFailedLoginAttempt(userId);
+
+        assertEquals(failedTime2, result);
+    }
+
+    @Test
+    void lastFailedLoginAttempt_shouldReturnNull_whenNoFailuresExist() {
+        String username = "testuser";
+        String email = "testuser@example.com";
+        String passwordHash = "hashedpassword";
+
+        Timestamp createdAt = Timestamp.valueOf("2023-02-01 12:00:00");
+        Timestamp successTime = Timestamp.valueOf("2023-04-03 11:00:00");
+
+        insertUser(username, email, passwordHash);
+        Long userId = userRepository.findIdByUsername(username);
+        insertLoginAttempt(userId, successTime,true);
+
+        Timestamp result = loginAttemptsRepository.lastFailedLoginAttempt(userId);
+
+        assertNull(result);
+    }
+
+    private void insertUser(String username, String email,
+                            String passwordHash) {
+        jdbcTemplate.update(
+                "INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)",
+                username, email, passwordHash
+        );
+    }
+
+    private void insertLoginAttempt(Long userId, Timestamp attemptTime, boolean success) {
+        jdbcTemplate.update(
+                "INSERT INTO login_attempts (user_id, attempt_time, success) VALUES (?, ?, ?)",
+                userId, attemptTime, success
+        );
     }
 }
