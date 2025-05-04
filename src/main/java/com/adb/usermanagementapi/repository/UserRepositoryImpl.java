@@ -49,7 +49,7 @@ public class UserRepositoryImpl implements UserRepository
     @Override
     public boolean existsByEmail(String email) {
         int count;
-        String sql = "SELECT 1 FROM users WHERE email = ?";
+        String sql = "SELECT 1 FROM users WHERE email = ? LIMIT 1";
 
         try {
             count =  jdbcTemplate.queryForObject(sql, Integer.class, email);
@@ -62,7 +62,7 @@ public class UserRepositoryImpl implements UserRepository
 
     @Override
     public Long findIdByUsername(String username) {
-        String sql = "SELECT id from users WHERE username = ?";
+        String sql = "SELECT id from users WHERE username = ? LIMIT 1";
 
         try {
             return jdbcTemplate.queryForObject(sql, Long.class, username);
