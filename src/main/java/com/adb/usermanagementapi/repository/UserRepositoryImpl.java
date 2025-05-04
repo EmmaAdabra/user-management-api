@@ -1,6 +1,7 @@
 package com.adb.usermanagementapi.repository;
 
 import com.adb.usermanagementapi.model.User;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -33,18 +34,30 @@ public class UserRepositoryImpl implements UserRepository
 
     @Override
     public boolean existsByUsername(String username) {
-        String sql = "SELECT COUNT(*) FROM users WHERE username = ?";
-        Integer count =  jdbcTemplate.queryForObject(sql, Integer.class, username);
+        int count;
+        String sql = "SELECT 1 FROM users WHERE username = ?";
 
-        return count != null && count > 0;
+        try {
+            count =  jdbcTemplate.queryForObject(sql, Integer.class, username);
+        } catch (org.springframework.dao.EmptyResultDataAccessException e){
+            count = 0;
+        }
+
+        return count > 0;
     }
 
     @Override
     public boolean existsByEmail(String email) {
-        String sql = "SELECT COUNT(*) FROM users WHERE email = ?";
-        Integer count =  jdbcTemplate.queryForObject(sql, Integer.class, email);
+        int count;
+        String sql = "SELECT 1 FROM users WHERE email = ?";
 
-        return count != null && count > 0;
+        try {
+            count =  jdbcTemplate.queryForObject(sql, Integer.class, email);
+        } catch (org.springframework.dao.EmptyResultDataAccessException e){
+            count = 0;
+        }
+
+        return count > 0;
     }
 
     @Override
