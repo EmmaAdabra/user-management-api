@@ -119,10 +119,10 @@ public class LoginAttemptsRepositoryTest {
 
         Timestamp createdAt = Timestamp.valueOf("2025-02-05 10:00:00");
         Timestamp failedTime1 = Timestamp.valueOf("2025-04-01 08:00:00");
-        Timestamp failedTime2 = Timestamp.valueOf("2025-04-02 09:30:00"); // latest
+        Timestamp failedTime2 = Timestamp.valueOf("2025-04-02 09:30:00");
         Timestamp successTime = Timestamp.valueOf("2025-04-03 11:00:00");
 
-        insertUser(username, email, passwordHash);
+        userRepository.save(username, email, passwordHash);
 
         Long userId = userRepository.findIdByUsername(username);
         insertLoginAttempt(userId, failedTime1, false);
@@ -143,21 +143,13 @@ public class LoginAttemptsRepositoryTest {
         Timestamp createdAt = Timestamp.valueOf("2023-02-01 12:00:00");
         Timestamp successTime = Timestamp.valueOf("2023-04-03 11:00:00");
 
-        insertUser(username, email, passwordHash);
+        userRepository.save(username, email, passwordHash);
         Long userId = userRepository.findIdByUsername(username);
         insertLoginAttempt(userId, successTime,true);
 
         Timestamp result = loginAttemptsRepository.lastFailedLoginAttempt(userId);
 
         assertNull(result);
-    }
-
-    private void insertUser(String username, String email,
-                            String passwordHash) {
-        jdbcTemplate.update(
-                "INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)",
-                username, email, passwordHash
-        );
     }
 
     private void insertLoginAttempt(Long userId, Timestamp attemptTime, boolean success) {
