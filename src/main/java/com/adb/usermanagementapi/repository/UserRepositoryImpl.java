@@ -118,7 +118,11 @@ public class UserRepositoryImpl implements UserRepository
 
     @Override
     public Boolean isUserLocked(String username) {
-        return jdbcTemplate.queryForObject(UserSql.IS_USER_LOCKED, Boolean.class, username);
+        try{
+            return jdbcTemplate.queryForObject(UserSql.IS_USER_LOCKED, Boolean.class, username);
+        } catch (org.springframework.dao.EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     @Override
