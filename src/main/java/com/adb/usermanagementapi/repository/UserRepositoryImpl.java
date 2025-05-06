@@ -1,6 +1,7 @@
 package com.adb.usermanagementapi.repository;
 
 import com.adb.usermanagementapi.model.User;
+import com.adb.usermanagementapi.util.UserSql;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -27,18 +28,16 @@ public class UserRepositoryImpl implements UserRepository
 
     @Override
     public void save(String username, String email, String passwordHash) {
-        String sql = "INSERT INTO users (username, email, password_hash) VALUES(?, ?, ?)";
 
-        jdbcTemplate.update(sql, username, email, passwordHash);
+        jdbcTemplate.update(UserSql.INSERT_INTO_USERS, username, email, passwordHash);
     }
 
     @Override
     public boolean existsByUsername(String username) {
         int count;
-        String sql = "SELECT 1 FROM users WHERE username = ?";
 
         try {
-            count =  jdbcTemplate.queryForObject(sql, Integer.class, username);
+            count =  jdbcTemplate.queryForObject(UserSql.CHECK_USER_EXISTS_BY_USERNAME, Integer.class, username);
         } catch (org.springframework.dao.EmptyResultDataAccessException e){
             count = 0;
         }
@@ -49,10 +48,9 @@ public class UserRepositoryImpl implements UserRepository
     @Override
     public boolean existsByEmail(String email) {
         int count;
-        String sql = "SELECT 1 FROM users WHERE email = ? LIMIT 1";
 
         try {
-            count =  jdbcTemplate.queryForObject(sql, Integer.class, email);
+            count =  jdbcTemplate.queryForObject(UserSql.CHECK_USER_EXISTS_BY_EMAIL, Integer.class, email);
         } catch (org.springframework.dao.EmptyResultDataAccessException e){
             count = 0;
         }
@@ -62,10 +60,8 @@ public class UserRepositoryImpl implements UserRepository
 
     @Override
     public Long findIdByUsername(String username) {
-        String sql = "SELECT id from users WHERE username = ? LIMIT 1";
-
         try {
-            return jdbcTemplate.queryForObject(sql, Long.class, username);
+            return jdbcTemplate.queryForObject(UserSql.SELECT_USER_ID_BY_USERNAME, Long.class, username);
         } catch (org.springframework.dao.EmptyResultDataAccessException e){
             return null;
         }
@@ -73,10 +69,8 @@ public class UserRepositoryImpl implements UserRepository
 
     @Override
     public Long findIdByEmail(String email) {
-        String sql = "SELECT id from users WHERE email = ?";
-
         try {
-            return jdbcTemplate.queryForObject(sql, Long.class, email);
+            return jdbcTemplate.queryForObject(UserSql.SELECT_USER_ID_BY_EMAIL, Long.class, email);
         } catch (org.springframework.dao.EmptyResultDataAccessException e){
             return null;
         }
@@ -84,10 +78,8 @@ public class UserRepositoryImpl implements UserRepository
 
     @Override
     public User findByUsername(String username) {
-        String sql = "SELECT id, username, email, password_hash, created_at FROM users WHERE username = ?";
-
         try {
-            return jdbcTemplate.queryForObject(sql, userRowMapper(), username);
+            return jdbcTemplate.queryForObject(UserSql.SELECT_USER_BY_USERNAME, userRowMapper(), username);
         } catch (org.springframework.dao.EmptyResultDataAccessException e){
             return null;
         }
@@ -95,15 +87,13 @@ public class UserRepositoryImpl implements UserRepository
 
     @Override
     public List<User> findAll() {
-        String sql = "SELECT id, username, email, password_hash, created_at FROM users";
-
-        return jdbcTemplate.query(sql, userRowMapper());
+        return jdbcTemplate.query(UserSql.SELECT_ALL_USERS, userRowMapper());
     }
 
     @Override
     public void updateUser(User user) {
-        String sql = "UPDATE users SET username = ?, email = ? WHERE id = ?";
-        int count = jdbcTemplate.update(sql, user.getUsername(), user.getEmail(), user.getId());
+        int count = jdbcTemplate.update(UserSql.UPDATE_USER_USERNAME_EMAIL_BY_ID, user.getUsername(), user.getEmail(),
+                user.getId());
 
         if(count == 0){
             throw new IllegalArgumentException("User with ID - " + user.getId() + " not found");
@@ -112,8 +102,7 @@ public class UserRepositoryImpl implements UserRepository
 
     @Override
     public void updatePassword(String username, String passwordHash) {
-        String sql = "UPDATE users SET password_hash = ? WHERE username = ?";
-        int count = jdbcTemplate.update(sql, passwordHash, username);
+        int count = jdbcTemplate.update(UserSql.UPDATE_USER_PASSWORD_BY_USERNAME, passwordHash, username);
 
         if(count == 0){
             throw new IllegalArgumentException("User with username - " + username + " not found");
@@ -122,8 +111,7 @@ public class UserRepositoryImpl implements UserRepository
 
     @Override
     public void deleteByUsername(String username) {
-        String sql = "DELETE FROM users WHERE username = ?";
-        int count = jdbcTemplate.update(sql, username);
+        int count = jdbcTemplate.update(UserSql.DELETE_USER_BY_USERNAME, username);
 
         if(count == 0){
             throw new IllegalArgumentException("user with username - " + username + " not found");
@@ -132,14 +120,12 @@ public class UserRepositoryImpl implements UserRepository
 
     @Override
     public boolean isUserLocked(String username) {
-        String sql = "SELECT is_locked FROM users WHERE username = ?";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, username);
+        return jdbcTemplate.queryForObject(UserSql.IS_USER_LOCKED, Boolean.class, username);
     }
 
     @Override
-    public void setUserLocked(String username, boolean locked) {
-        String sql = "UPDATE users SET is_locked = ? WHERE username = ?";
-        int rows = jdbcTemplate.update(sql, locked, username);
+    public void setUserLocked(String username, boolean lockedStatus) {
+        int rows = jdbcTemplate.update(UserSql.UPDATE_USER_LOCK_STATUS, lockedStatus, username);
         if (rows == 0) {
             throw new IllegalArgumentException("User not found: " + username);
         }
