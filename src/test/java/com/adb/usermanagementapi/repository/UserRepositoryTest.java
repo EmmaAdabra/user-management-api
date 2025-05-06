@@ -298,4 +298,38 @@ public class UserRepositoryTest {
                 "Should throw exception for non-existent user");
     }
 
+    @Test
+    void isUserLocked_userIsLocked_returnTrue(){
+        // Arrange
+        String username = "lockeduser";
+        String email = "lockeduser@example.com";
+        String passwordHash = "hashedpassword";
+
+        userRepository.save(username, email, passwordHash);
+        userRepository.setUserLocked(username, true);
+
+        // Act
+        boolean userLockStatus = userRepository.isUserLocked(username);
+
+        // Assert
+        assertTrue(userLockStatus, "user locked status should be true");
+    }
+
+    @Test
+    void isUserLocked_userIsNotLocked_returnFalse(){
+        // Arrange
+        String username = "testuser";
+        String email = "testuser@example.com";
+        String passwordHash = "hashedpassword";
+
+        userRepository.save(username, email, passwordHash);
+        userRepository.setUserLocked(username, true); // false by default
+        userRepository.setUserLocked(username, false);
+
+        // Act
+        boolean userLockStatus = userRepository.isUserLocked(username);
+
+        // Assert
+        assertFalse(userLockStatus, "user locked status should be false");
+    }
 }
