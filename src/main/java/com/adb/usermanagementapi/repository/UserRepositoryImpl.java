@@ -2,11 +2,9 @@ package com.adb.usermanagementapi.repository;
 
 import com.adb.usermanagementapi.model.User;
 import com.adb.usermanagementapi.util.UserSql;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class UserRepositoryImpl implements UserRepository
@@ -119,7 +117,7 @@ public class UserRepositoryImpl implements UserRepository
     }
 
     @Override
-    public boolean isUserLocked(String username) {
+    public Boolean isUserLocked(String username) {
         return jdbcTemplate.queryForObject(UserSql.IS_USER_LOCKED, Boolean.class, username);
     }
 
