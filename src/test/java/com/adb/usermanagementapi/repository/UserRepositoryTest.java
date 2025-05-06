@@ -332,4 +332,20 @@ public class UserRepositoryTest {
         // Assert
         assertFalse(userLockStatus, "user locked status should be false");
     }
+
+    @Test
+    void isUserLocked_byDefault_returnFalse(){
+        // Arrange
+        String username = "testuser";
+        String email = "testuser@example.com";
+        String passwordHash = "hashedpassword";
+
+        userRepository.save(username, email, passwordHash);
+
+        // Act
+        boolean userLockStatus = userRepository.isUserLocked(username);
+
+        // Assert
+        assertFalse(userLockStatus, "user locked status should be false by default");
+    }
 }
