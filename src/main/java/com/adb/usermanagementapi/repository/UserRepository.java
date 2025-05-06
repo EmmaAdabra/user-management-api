@@ -15,6 +15,6 @@ public interface UserRepository {
     void updateUser(User user);
     void updatePassword(String username, String passwordHash);
     void deleteByUsername(String username);
-    boolean isUserLocked(String username);
+    Boolean isUserLocked(String username);
     void setUserLocked(String username, boolean locked);
 }
