@@ -1,6 +1,7 @@
 package com.adb.usermanagementapi.repository;
 
 import com.adb.usermanagementapi.config.TestConfig;
+import com.adb.usermanagementapi.exception.UserNotFoundException;
 import com.adb.usermanagementapi.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -254,7 +255,8 @@ public class UserRepositoryTest {
     void updateUser_userNotFound_throwsException(){
         User noneExistenceUser = new User(999L, "noneExistenceUser", "noneExistenceUser@example" +
                 ".com", "hashedpassword", null);
-        assertThrows(IllegalArgumentException.class, () -> userRepository.updateUser(noneExistenceUser), "Should throw exception for non-existent user");
+        assertThrows(UserNotFoundException.class, () -> userRepository.updateUser(noneExistenceUser), "Should throw " +
+                "exception for non-existent user");
     }
 
     @Test
@@ -275,7 +277,7 @@ public class UserRepositoryTest {
 
     @Test
     void updatePassword_userNotFound_throwsException() {
-        assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(UserNotFoundException.class, () ->
             userRepository.updatePassword("nonexistent", "newhashedpassword"), "Should throw exception for non-existent user");
     }
 
@@ -294,7 +296,7 @@ public class UserRepositoryTest {
 
     @Test
     void deleteByUsername_userNotFound_throwsException() {
-        assertThrows(IllegalArgumentException.class, () -> userRepository.deleteByUsername("nonexistent"),
+        assertThrows(UserNotFoundException.class, () -> userRepository.deleteByUsername("nonexistent"),
                 "Should throw exception for non-existent user");
     }
 
