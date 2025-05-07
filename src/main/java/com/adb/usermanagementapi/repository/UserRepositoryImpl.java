@@ -1,5 +1,6 @@
 package com.adb.usermanagementapi.repository;
 
+import com.adb.usermanagementapi.exception.UserNotFoundException;
 import com.adb.usermanagementapi.model.User;
 import com.adb.usermanagementapi.util.UserSql;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -92,7 +93,7 @@ public class UserRepositoryImpl implements UserRepository
                 user.getId());
 
         if(count == 0){
-            throw new IllegalArgumentException("User with ID - " + user.getId() + " not found");
+            throw new UserNotFoundException("User with ID - " + user.getId() + " not found");
         }
     }
 
@@ -101,7 +102,7 @@ public class UserRepositoryImpl implements UserRepository
         int count = jdbcTemplate.update(UserSql.UPDATE_USER_PASSWORD_BY_USERNAME, passwordHash, username);
 
         if(count == 0){
-            throw new IllegalArgumentException("User with username - " + username + " not found");
+            throw new UserNotFoundException("User with username - " + username + " not found");
         }
     }
 
@@ -110,7 +111,7 @@ public class UserRepositoryImpl implements UserRepository
         int count = jdbcTemplate.update(UserSql.DELETE_USER_BY_USERNAME, username);
 
         if(count == 0){
-            throw new IllegalArgumentException("user with username - " + username + " not found");
+            throw new UserNotFoundException("user with username - " + username + " not found");
         }
     }
 
@@ -127,7 +128,7 @@ public class UserRepositoryImpl implements UserRepository
     public void setUserLocked(String username, boolean lockedStatus) {
         int rows = jdbcTemplate.update(UserSql.UPDATE_USER_LOCK_STATUS, lockedStatus, username);
         if (rows == 0) {
-            throw new IllegalArgumentException("User not found: " + username);
+            throw new UserNotFoundException("User not found: " + username);
         }
     }
 }
