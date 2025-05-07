@@ -361,4 +361,36 @@ public class UserRepositoryTest {
         // Assert
         assertNull(userLockStatus, "user not found, lock status should be null");
     }
+
+    @Test
+    void setUserLocked_setUserLockedToTrue(){
+        // Arrange
+        String username = "testuser";
+        String email = "testuser@example.com";
+        String passwordHash = "hashedpassword";
+
+        userRepository.save(username, email, passwordHash);
+
+        // Act
+        userRepository.setUserLocked(username, true);
+
+        // Assert
+        assertTrue(userRepository.isUserLocked(username), "User locked status should be true");
+    }
+
+    @Test
+    void setUserLocked_setUserLockedToFalse(){
+        // Arrange
+        String username = "testuser";
+        String email = "testuser@example.com";
+        String passwordHash = "hashedpassword";
+
+        userRepository.save(username, email, passwordHash);
+
+        // Act
+        userRepository.setUserLocked(username, false);
+
+        // Assert
+        assertFalse(userRepository.isUserLocked(username), "User locked status should be false");
+    }
 }
