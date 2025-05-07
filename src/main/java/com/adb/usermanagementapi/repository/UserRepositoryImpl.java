@@ -10,15 +10,13 @@ import java.util.List;
 public class UserRepositoryImpl implements UserRepository
 {
     private final JdbcTemplate jdbcTemplate;
-    private RowMapper<User> userRowMapper(){
-        return (rs, rowNum) -> new User(
+    private static final RowMapper<User> USER_ROW_MAPPER = (rs, rowNum) -> new User(
                 rs.getLong("id"),
                 rs.getString("username"),
                 rs.getString("email"),
                 rs.getString("password_hash"),
                 rs.getTimestamp("created_at").toLocalDateTime()
         );
-    }
 
     public UserRepositoryImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -77,7 +75,7 @@ public class UserRepositoryImpl implements UserRepository
     @Override
     public User findByUsername(String username) {
         try {
-            return jdbcTemplate.queryForObject(UserSql.SELECT_USER_BY_USERNAME, userRowMapper(), username);
+            return jdbcTemplate.queryForObject(UserSql.SELECT_USER_BY_USERNAME, USER_ROW_MAPPER, username);
         } catch (org.springframework.dao.EmptyResultDataAccessException e){
             return null;
         }
@@ -85,7 +83,7 @@ public class UserRepositoryImpl implements UserRepository
 
     @Override
     public List<User> findAll() {
-        return jdbcTemplate.query(UserSql.SELECT_ALL_USERS, userRowMapper());
+        return jdbcTemplate.query(UserSql.SELECT_ALL_USERS, USER_ROW_MAPPER);
     }
 
     @Override
