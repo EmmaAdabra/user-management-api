@@ -309,7 +309,7 @@ public class UserRepositoryTest {
         userRepository.setUserLocked(username, true);
 
         // Act
-        boolean userLockStatus = userRepository.isUserLocked(username);
+        Boolean userLockStatus = userRepository.isUserLocked(username);
 
         // Assert
         assertTrue(userLockStatus, "user locked status should be true");
@@ -327,7 +327,7 @@ public class UserRepositoryTest {
         userRepository.setUserLocked(username, false);
 
         // Act
-        boolean userLockStatus = userRepository.isUserLocked(username);
+        Boolean userLockStatus = userRepository.isUserLocked(username);
 
         // Assert
         assertFalse(userLockStatus, "user locked status should be false");
@@ -343,9 +343,20 @@ public class UserRepositoryTest {
         userRepository.save(username, email, passwordHash);
 
         // Act
-        boolean userLockStatus = userRepository.isUserLocked(username);
+        Boolean userLockStatus = userRepository.isUserLocked(username);
 
         // Assert
         assertFalse(userLockStatus, "user locked status should be false by default");
+    }
+
+    @Test
+    void isUserLocked_userNotFound_returnNull(){
+        // Arrange
+        String noneExistenceUser = "testuser";
+        // Act
+        Boolean userLockStatus = userRepository.isUserLocked(noneExistenceUser);
+
+        // Assert
+        assertNull(userLockStatus, "user not found, lock status should be null");
     }
 }
