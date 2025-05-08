@@ -393,4 +393,11 @@ public class UserRepositoryTest {
         // Assert
         assertFalse(userRepository.isUserLocked(username), "User locked status should be false");
     }
+
+    @Test
+    void setUserLocked_nonExistenceUser_throwsException(){
+        assertThrows(UserNotFoundException.class, () -> {
+            userRepository.setUserLocked("nonexistenteuser", true);
+        });
+    }
 }
