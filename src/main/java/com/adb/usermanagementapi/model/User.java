@@ -8,6 +8,7 @@ public class User {
     private final String email;
     private final String passwordHash;
     private final LocalDateTime createdAt;
+    boolean isLocked;
 
     public User(Long id, String username, String email, String passwordHash,
                 LocalDateTime createdAt) {
@@ -36,5 +37,9 @@ public class User {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public boolean isLocked() {
+        return isLocked;
     }
 }
