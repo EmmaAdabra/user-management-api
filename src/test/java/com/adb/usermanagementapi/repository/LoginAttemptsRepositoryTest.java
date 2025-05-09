@@ -199,7 +199,21 @@ public class LoginAttemptsRepositoryTest {
         // get all login attempt within the last 2 seconds
         List<LoginAttempt> loginAttemptList = loginAttemptsRepository.findRecentLogins(userId, 2);
 
-        assertTrue(loginAttemptList.isEmpty(), "No existing login attempts within 2 seconds for" +
+        assertTrue(loginAttemptList.isEmpty(), "Should be no existing login attempts within 2 " +
+                "seconds for" +
                 " provided user ID");
+    }
+
+    @Test
+    void findRecentLogins_noneExistingUser_returnsEmptyList(){
+        // Arrange
+        Long noneExistingUserId = 900L;
+
+        // Act
+        List<LoginAttempt> loginAttemptList = loginAttemptsRepository.findRecentLogins(noneExistingUserId, 2);
+
+        // Assert
+        assertTrue(loginAttemptList.isEmpty(), "Should be no login attempts for none-existing " +
+                "user");
     }
 }
