@@ -49,7 +49,7 @@ public class LoginAttemptsRepositoryImpl implements LoginAttemptsRepository{
 
     @Override
     public List<LoginAttempt> findRecentLogins(Long userId, int timeInterval) {
-        LocalDateTime interval = LocalDateTime.now().minusSeconds(timeInterval);
+        LocalDateTime interval = LocalDateTime.now().minusMinutes(timeInterval);
         try{
             return jdbcTemplate.query(SELECT_RECENT_LOGIN_WITHIN_GIVEN_TIME,
                     LOGIN_ATTEMPT_ROW_MAPPER, userId, interval);
