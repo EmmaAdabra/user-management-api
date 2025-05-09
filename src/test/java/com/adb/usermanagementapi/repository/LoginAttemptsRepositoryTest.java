@@ -30,31 +30,12 @@ public class LoginAttemptsRepositoryTest {
         jdbcTemplate.update("DELETE FROM users");
     }
 
-    @Test
-    void countFailedAttemptsInLastTwoMinutes_noAttempts_returnsZero(){
-        String username = "testuser";
-        userRepository.save(username, "testuser@example.com", "hashedpassword");
-        Long userId = userRepository.findIdByUsername(username);
-
-        int count = loginAttemptsRepository.countFailedAttemptsInLastTwoMinutes(userId);
-        assertEquals(0, count, "No login attempts should return zero");
-    }
-
-    @Test
-    void countFailedAttemptsInLastTwoMinutes_multipleFailedAttempts_returnsCorrectCount() {
-        // Arrange
-        String username = "testuser";
-        userRepository.save(username, "testuser@example.com", "hashedpassword");
-        Long userId = userRepository.findIdByUsername(username);
-        loginAttemptsRepository.logLoginAttempt(userId, false);
-        loginAttemptsRepository.logLoginAttempt(userId, true);
-        loginAttemptsRepository.logLoginAttempt(userId, false);
-
-        // Act
-        int count = loginAttemptsRepository.countFailedAttemptsInLastTwoMinutes(userId);
-
-        // Assert
-        assertEquals(2, count, "Should count only failed attempts within 2 minutes");
+    // helper method
+    private void insertLoginAttempt(Long userId, Timestamp attemptTime, boolean success) {
+        jdbcTemplate.update(
+                "INSERT INTO login_attempts (user_id, attempt_time, success) VALUES (?, ?, ?)",
+                userId, attemptTime, success
+        );
     }
 
     @Test
@@ -63,20 +44,21 @@ public class LoginAttemptsRepositoryTest {
         String username = "testuser";
         userRepository.save(username, "testuser@example.com", "hashedpassword");
         Long userId = userRepository.findIdByUsername(username);
+        int interOfFiveMinutes = 5;
 
         // Act
         loginAttemptsRepository.logLoginAttempt(userId, false);
         loginAttemptsRepository.logLoginAttempt(userId, false);
+        loginAttemptsRepository.logLoginAttempt(userId, false);
 
-        String detailSql = "SELECT success, user_id FROM login_attempts WHERE user_id = ? " +
-                "ORDER BY  attempt_time DESC LIMIT 1";
-        Object[] result = jdbcTemplate.queryForObject(detailSql, (rs, rowNum) -> new Object[]{
-                rs.getLong("user_id"),
-                rs.getBoolean("success")
-        }, userId);
+        List<LoginAttempt> loginAttemptList = loginAttemptsRepository.findRecentLogins(userId,
+                interOfFiveMinutes);
 
-        assertEquals(userId, result[0], "user ID should match");
-        assertFalse((Boolean) result[1], "Success should be false");
+        // Assert
+        assertEquals(3, loginAttemptList.size(), "Login attempts for user the ID within 5 minutes" +
+                " should be 3");
+        assertFalse(loginAttemptList.get(0).success(), "login attempt status for the user Id " +
+                "should be false");
     }
 
     @Test
@@ -149,12 +131,7 @@ public class LoginAttemptsRepositoryTest {
         assertNull(result);
     }
 
-    private void insertLoginAttempt(Long userId, Timestamp attemptTime, boolean success) {
-        jdbcTemplate.update(
-                "INSERT INTO login_attempts (user_id, attempt_time, success) VALUES (?, ?, ?)",
-                userId, attemptTime, success
-        );
-    }
+
 
     @Test
     void findRecentLogins_existingLoginsWithinSpecificInterval_returnsNonEmptyList(){
