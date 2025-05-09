@@ -11,12 +11,13 @@ public class User {
     boolean isLocked;
 
     public User(Long id, String username, String email, String passwordHash,
-                LocalDateTime createdAt) {
+                LocalDateTime createdAt, boolean isLocked) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.passwordHash = passwordHash;
         this.createdAt = createdAt;
+        this.isLocked = isLocked;
     }
 
     public Long getId() {
