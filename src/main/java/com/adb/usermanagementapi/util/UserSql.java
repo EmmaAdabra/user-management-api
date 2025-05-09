@@ -12,9 +12,9 @@ public class UserSql {
     public static final String SELECT_USER_ID_BY_EMAIL = "SELECT id from users WHERE email " +
             "= ? LIMIT 1";
     public static final String SELECT_USER_BY_USERNAME = "SELECT id, username, email, " +
-            "password_hash, created_at FROM users WHERE username = ?";
+            "password_hash, created_at, is_locked FROM users WHERE username = ?";
     public static final String SELECT_ALL_USERS = "SELECT id, username, email, password_hash, " +
-            "created_at FROM users";
+            "created_at, is_locked FROM users";
     public static final String UPDATE_USER_USERNAME_EMAIL_BY_ID = "UPDATE users SET username = ?," +
             " email = ? WHERE id = ?";
     public static final String UPDATE_USER_PASSWORD_BY_USERNAME = "UPDATE users SET password_hash" +
