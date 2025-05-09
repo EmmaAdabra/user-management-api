@@ -232,10 +232,12 @@ public class UserRepositoryTest {
     }
 
     @Test
-    void updateUser_success() {
+    void updateUser_success_returnsTrue() {
+        // Arrange
         String username = "testuser";
         String email = "testuser@example.com";
         String passwordHash = "hashedpassword";
+
         userRepository.save(username, email, passwordHash);
 
         String updatedUserName = "newuser";
@@ -243,9 +245,14 @@ public class UserRepositoryTest {
 
         Long existingUserId = userRepository.findIdByUsername(username);
 
-        userRepository.updateUser(updatedUserName, updatedUserEmail, existingUserId);
+        // Act
+        boolean isUpdated = userRepository.updateUser(updatedUserName, updatedUserEmail,
+                existingUserId);
 
         User foundUser = userRepository.findByUsername(updatedUserName);
+
+        // Assert
+        assertTrue(isUpdated, "isUpdated should be true");
         assertNull(userRepository.findByUsername(username), "Old username should no longer be found");
         assertNotNull(foundUser, "Updated user should be found");
         assertEquals(updatedUserName, foundUser.getUsername(), "Username should be updated");
@@ -254,58 +261,65 @@ public class UserRepositoryTest {
     }
 
     @Test
-    void updateUser_userNotFound_throwsException(){
+    void updateUser_userNotFound_returnsFalse(){
+        // Arrange
         Long noneExistenceUserId = 90L;
 
-        assertThrows(UserNotFoundException.class, () -> userRepository.updateUser(
-                "noneexistenceuser",
-                "noneExistenceUser@gmail.com", noneExistenceUserId), "Should throw " +
-                "exception for non-existent user");
+        // Act
+        boolean isUpdated = userRepository.updateUser("noneuser", "noneuser@gmail.com",
+                noneExistenceUserId);
+
+        assertFalse(isUpdated,"Should be false for a none user");
     }
 
     @Test
-    void updatePassword_success(){
+    void updatePassword_success_returnsTrue(){
+        // Arrange
         String username = "testuser";
         String email = "testuser@example.com";
         String passwordHash = "hashedpassword";
+
         userRepository.save(username, email, passwordHash);
 
         String updatedPassword = "newHashPassword";
-        userRepository.updatePassword(username, updatedPassword);
 
-        User user = userRepository.findByUsername(username);
-        assertNotNull(user, "user should be found");
-        assertEquals(updatedPassword, user.getPasswordHash(), "updatedPassword should match use " +
-                "passwordhash");
+        // Act
+        boolean isUpdated = userRepository.updatePassword(username, updatedPassword);
+
+        // Assert
+        assertTrue(isUpdated, "isUpdated should be true");
     }
 
     @Test
-    void updatePassword_userNotFound_throwsException() {
-        assertThrows(UserNotFoundException.class, () ->
-            userRepository.updatePassword("nonexistent", "newhashedpassword"), "Should throw exception for non-existent user");
+    void updatePassword_userNotFound_returnsFalse() {
+        boolean isUpdated = userRepository.updatePassword("noneuser", "newhashedpassword");
+
+        assertFalse(isUpdated, "isUpdated should be for false for none user");
     }
 
     @Test
-    void deleteByUsername_success() {
+    void deleteByUsername_success_returnsTrue() {
         String username = "testuser";
         String email = "testuser@example.com";
         String passwordHash = "hashedpassword";
         userRepository.save(username, email, passwordHash);
 
-        userRepository.deleteByUsername(username);
+        boolean isDeleted = userRepository.deleteByUsername(username);
 
+        assertTrue(isDeleted, "IsDeleted should be true");
         assertFalse(userRepository.existsByUsername(username), "User should be deleted");
         assertFalse(userRepository.existsByEmail(email), "User email should be deleted");
     }
 
     @Test
-    void deleteByUsername_userNotFound_throwsException() {
-        assertThrows(UserNotFoundException.class, () -> userRepository.deleteByUsername("nonexistent"),
-                "Should throw exception for non-existent user");
+    void deleteByUsername_userNotFound_returnsFalse() {
+        boolean isDeleted = userRepository.deleteByUsername("noneuser");
+
+        assertFalse(isDeleted, "isDeleted should be false for none user");
     }
 
     @Test
-    void isUserLocked_userIsLocked_returnTrue(){
+    void isUserLocked_userIsLocked_returnsTrue(){
         // Arrange
         String username = "lockeduser";
         String email = "lockeduser@example.com";
@@ -322,7 +336,7 @@ public class UserRepositoryTest {
     }
 
     @Test
-    void isUserLocked_userIsNotLocked_returnFalse(){
+    void isUserLocked_userIsNotLocked_returnsFalse(){
         // Arrange
         String username = "testuser";
         String email = "testuser@example.com";
@@ -340,7 +354,7 @@ public class UserRepositoryTest {
     }
 
     @Test
-    void isUserLocked_byDefault_returnFalse(){
+    void isUserLocked_byDefault_returnsFalse(){
         // Arrange
         String username = "testuser";
         String email = "testuser@example.com";
@@ -356,7 +370,7 @@ public class UserRepositoryTest {
     }
 
     @Test
-    void isUserLocked_userNotFound_returnNull(){
+    void isUserLocked_userNotFound_returnsNull(){
         // Arrange
         String noneExistenceUser = "testuser";
         // Act

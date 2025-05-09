@@ -89,32 +89,26 @@ public class UserRepositoryImpl implements UserRepository
     }
 
     @Override
-    public void updateUser(String username, String email, Long userId) {
+    public boolean updateUser(String username, String email, Long userId) {
         int count = jdbcTemplate.update(UserSql.UPDATE_USER_USERNAME_EMAIL_BY_ID, username,
                 email,
                 userId);
 
-        if(count == 0){
-            throw new UserNotFoundException("User with ID - " + userId + " not found");
-        }
+        return count > 0;
     }
 
     @Override
-    public void updatePassword(String username, String passwordHash) {
+    public boolean updatePassword(String username, String passwordHash) {
         int count = jdbcTemplate.update(UserSql.UPDATE_USER_PASSWORD_BY_USERNAME, passwordHash, username);
 
-        if(count == 0){
-            throw new UserNotFoundException("User with username - " + username + " not found");
-        }
+        return count > 0;
     }
 
     @Override
-    public void deleteByUsername(String username) {
+    public boolean deleteByUsername(String username) {
         int count = jdbcTemplate.update(UserSql.DELETE_USER_BY_USERNAME, username);
 
-        if(count == 0){
-            throw new UserNotFoundException("user with username - " + username + " not found");
-        }
+        return count > 0;
     }
 
     @Override

@@ -12,9 +12,9 @@ public interface UserRepository {
     Long findIdByEmail(String email);
     User findByUsername(String username);
     List<User> findAll();
-    void updateUser(String username, String email, Long userId);
-    void updatePassword(String username, String passwordHash);
-    void deleteByUsername(String username);
+    boolean updateUser(String username, String email, Long userId);
+    boolean updatePassword(String username, String passwordHash);
+    boolean deleteByUsername(String username);
     Boolean isUserLocked(String username);
     void setUserLocked(String username, boolean locked);
 }
