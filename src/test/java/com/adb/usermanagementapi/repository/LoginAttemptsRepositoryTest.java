@@ -2,7 +2,6 @@ package com.adb.usermanagementapi.repository;
 
 import com.adb.usermanagementapi.config.TestConfig;
 import com.adb.usermanagementapi.model.dto.LoginAttempt;
-import com.adb.usermanagementapi.util.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -112,16 +112,15 @@ public class LoginAttemptsRepositoryTest {
 
         Long userId = userRepository.findIdByUsername(username);
 
-        loginAttemptsRepository.logLoginAttempt(userId, false);
-        TestUtils.delay(3000); // delay for 3 seconds
-        loginAttemptsRepository.logLoginAttempt(userId, true);
-        loginAttemptsRepository.logLoginAttempt(userId, false);
+        insertLoginAttempt(userId, Timestamp.valueOf(LocalDateTime.now().minusMinutes(30)), false);
+        insertLoginAttempt(userId, Timestamp.valueOf(LocalDateTime.now()), false);
+        insertLoginAttempt(userId, Timestamp.valueOf(LocalDateTime.now()), true);
 
-        // get all login attempt within the last 2 seconds
-        List<LoginAttempt> loginAttemptList = loginAttemptsRepository.findRecentLogins(userId, 2);
+        // get all login attempt within the last 10 minutes
+        List<LoginAttempt> loginAttemptList = loginAttemptsRepository.findRecentLogins(userId, 10);
 
-        assertEquals(2, loginAttemptList.size(), "There should be 2 login attempt within 2 " +
-                "seconds for the user ID");
+        assertEquals(2, loginAttemptList.size(), "There should be 2 login attempt within 10 " +
+                "minutes for the user ID");
         assertSame(loginAttemptList.get(0).userId(), userId);
     }
 
@@ -136,17 +135,15 @@ public class LoginAttemptsRepositoryTest {
 
         Long userId = userRepository.findIdByUsername(username);
 
-        loginAttemptsRepository.logLoginAttempt(userId, false);
-        loginAttemptsRepository.logLoginAttempt(userId, true);
-        loginAttemptsRepository.logLoginAttempt(userId, false);
-        TestUtils.delay(3000); // delay for 3 seconds
+        insertLoginAttempt(userId, Timestamp.valueOf(LocalDateTime.now().minusMinutes(30)), false);
+        insertLoginAttempt(userId, Timestamp.valueOf(LocalDateTime.now().minusMinutes(20)), false);
+        insertLoginAttempt(userId, Timestamp.valueOf(LocalDateTime.now().minusMinutes(15)), true);
 
-        // get all login attempt within the last 2 seconds
-        List<LoginAttempt> loginAttemptList = loginAttemptsRepository.findRecentLogins(userId, 2);
+        // get all login attempt within the last 10 minutes
+        List<LoginAttempt> loginAttemptList = loginAttemptsRepository.findRecentLogins(userId, 10);
 
-        assertTrue(loginAttemptList.isEmpty(), "Should be no existing login attempts within 2 " +
-                "seconds for" +
-                " provided user ID");
+        assertTrue(loginAttemptList.isEmpty(), "Should be no existing login attempts within " +
+                "the last 10 minutes for provided user ID");
     }
 
     @Test
