@@ -175,7 +175,31 @@ public class LoginAttemptsRepositoryTest {
         // get all login attempt within the last 2 seconds
         List<LoginAttempt> loginAttemptList = loginAttemptsRepository.findRecentLogins(userId, 2);
 
-        assertEquals(2, loginAttemptList.size());
+        assertEquals(2, loginAttemptList.size(), "There should be 2 login attempt within 2 " +
+                "seconds for the user ID");
         assertSame(loginAttemptList.get(0).userId(), userId);
+    }
+
+    @Test
+    void findRecentLogins_noExistingLoginsWithinSpecificInterval_returnsEmptyList(){
+        // Arrange
+        String username = "testuser";
+        String email = "testuser@example.com";
+        String passwordHash = "hashedpassword";
+
+        userRepository.save(username, email, passwordHash);
+
+        Long userId = userRepository.findIdByUsername(username);
+
+        loginAttemptsRepository.logLoginAttempt(userId, false);
+        loginAttemptsRepository.logLoginAttempt(userId, true);
+        loginAttemptsRepository.logLoginAttempt(userId, false);
+        TestUtils.delay(3000); // delay for 3 seconds
+
+        // get all login attempt within the last 2 seconds
+        List<LoginAttempt> loginAttemptList = loginAttemptsRepository.findRecentLogins(userId, 2);
+
+        assertTrue(loginAttemptList.isEmpty(), "No existing login attempts within 2 seconds for" +
+                " provided user ID");
     }
 }
