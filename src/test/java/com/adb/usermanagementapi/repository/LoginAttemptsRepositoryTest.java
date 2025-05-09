@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -67,7 +66,6 @@ public class LoginAttemptsRepositoryTest {
         String email = "testuser@example.com";
         String passwordHash = "hashedpassword";
 
-        Timestamp createdAt = Timestamp.valueOf("2025-02-05 10:00:00");
         Timestamp failedTime1 = Timestamp.valueOf("2025-04-01 08:00:00");
         Timestamp failedTime2 = Timestamp.valueOf("2025-04-02 09:30:00");
         Timestamp successTime = Timestamp.valueOf("2025-04-03 11:00:00");
@@ -90,7 +88,6 @@ public class LoginAttemptsRepositoryTest {
         String email = "testuser@example.com";
         String passwordHash = "hashedpassword";
 
-        Timestamp createdAt = Timestamp.valueOf("2023-02-01 12:00:00");
         Timestamp successTime = Timestamp.valueOf("2023-04-03 11:00:00");
 
         userRepository.save(username, email, passwordHash);
