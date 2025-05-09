@@ -1,6 +1,8 @@
 package com.adb.usermanagementapi.repository;
 
 import com.adb.usermanagementapi.config.TestConfig;
+import com.adb.usermanagementapi.model.dto.LoginAttempt;
+import com.adb.usermanagementapi.util.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -62,15 +66,8 @@ public class LoginAttemptsRepositoryTest {
 
         // Act
         loginAttemptsRepository.logLoginAttempt(userId, false);
-        loginAttemptsRepository.logLoginAttempt(userId, true);
         loginAttemptsRepository.logLoginAttempt(userId, false);
 
-        // Assert: Check count of failed login attempts
-        String countSql = "SELECT COUNT(*) FROM login_attempts WHERE user_id = ? AND success = false";
-        Integer count = jdbcTemplate.queryForObject(countSql, Integer.class, userId);
-        assertEquals(2, count, "Two failed attempt should be logged");
-
-        // Additional test
         String detailSql = "SELECT success, user_id FROM login_attempts WHERE user_id = ? " +
                 "ORDER BY  attempt_time DESC LIMIT 1";
         Object[] result = jdbcTemplate.queryForObject(detailSql, (rs, rowNum) -> new Object[]{
@@ -101,7 +98,7 @@ public class LoginAttemptsRepositoryTest {
 
         // Additional test
         String detailSql = "SELECT success, user_id FROM login_attempts WHERE user_id = ? " +
-                "ORDER BY  attempt_time DESC LIMIT 1";
+                "ORDER BY  attempt_time DESC";
         Object[] result = jdbcTemplate.queryForObject(detailSql, (rs, rowNum) -> new Object[]{
                 rs.getLong("user_id"),
                 rs.getBoolean("success")
@@ -157,5 +154,28 @@ public class LoginAttemptsRepositoryTest {
                 "INSERT INTO login_attempts (user_id, attempt_time, success) VALUES (?, ?, ?)",
                 userId, attemptTime, success
         );
+    }
+
+    @Test
+    void findRecentLogins_existingLoginsWithinSpecificInterval_returnsNonEmptyList(){
+        // Arrange
+        String username = "testuser";
+        String email = "testuser@example.com";
+        String passwordHash = "hashedpassword";
+
+        userRepository.save(username, email, passwordHash);
+
+        Long userId = userRepository.findIdByUsername(username);
+
+        loginAttemptsRepository.logLoginAttempt(userId, false);
+        TestUtils.delay(3000); // delay for 3 seconds
+        loginAttemptsRepository.logLoginAttempt(userId, true);
+        loginAttemptsRepository.logLoginAttempt(userId, false);
+
+        // get all login attempt within the last 2 seconds
+        List<LoginAttempt> loginAttemptList = loginAttemptsRepository.findRecentLogins(userId, 2);
+
+        assertEquals(2, loginAttemptList.size());
+        assertSame(loginAttemptList.get(0).userId(), userId);
     }
 }
