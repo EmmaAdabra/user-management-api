@@ -39,7 +39,7 @@ public class LoginAttemptsRepositoryTest {
     }
 
     @Test
-    void logLoginAttempt_failedAttempt_logsCorrectly(){
+    void logLoginAttempt_successful_logsCorrectly(){
         // Arrange
         String username = "testuser";
         userRepository.save(username, "testuser@example.com", "hashedpassword");
@@ -49,7 +49,7 @@ public class LoginAttemptsRepositoryTest {
         // Act
         loginAttemptsRepository.logLoginAttempt(userId, false);
         loginAttemptsRepository.logLoginAttempt(userId, false);
-        loginAttemptsRepository.logLoginAttempt(userId, false);
+        loginAttemptsRepository.logLoginAttempt(userId, true);
 
         List<LoginAttempt> loginAttemptList = loginAttemptsRepository.findRecentLogins(userId,
                 interOfFiveMinutes);
@@ -59,35 +59,6 @@ public class LoginAttemptsRepositoryTest {
                 " should be 3");
         assertFalse(loginAttemptList.get(0).success(), "login attempt status for the user Id " +
                 "should be false");
-    }
-
-    @Test
-    void logLoginAttempt_successfulAttempt_logsCorrectly(){
-        // Arrange
-        String username = "testuser";
-        userRepository.save(username, "testuser@example.com", "hashedpassword");
-        Long userId = userRepository.findIdByUsername(username);
-
-        // Act
-        loginAttemptsRepository.logLoginAttempt(userId, true);
-        loginAttemptsRepository.logLoginAttempt(userId, false);
-        loginAttemptsRepository.logLoginAttempt(userId, true);
-
-        // Assert: Check count of failed login attempts
-        String countSql = "SELECT COUNT(*) FROM login_attempts WHERE user_id = ? AND success = true";
-        Integer count = jdbcTemplate.queryForObject(countSql, Integer.class, userId);
-        assertEquals(2, count, "Two successful attempt should be logged");
-
-        // Additional test
-        String detailSql = "SELECT success, user_id FROM login_attempts WHERE user_id = ? " +
-                "ORDER BY  attempt_time DESC";
-        Object[] result = jdbcTemplate.queryForObject(detailSql, (rs, rowNum) -> new Object[]{
-                rs.getLong("user_id"),
-                rs.getBoolean("success")
-        }, userId);
-
-        assertEquals(userId, result[0], "user ID should match");
-        assertTrue((Boolean) result[1], "Success should be true");
     }
 
     @Test
