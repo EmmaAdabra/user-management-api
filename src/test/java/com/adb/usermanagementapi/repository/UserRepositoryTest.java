@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -239,23 +238,28 @@ public class UserRepositoryTest {
         String passwordHash = "hashedpassword";
         userRepository.save(username, email, passwordHash);
 
-        User existingUser = userRepository.findByUsername(username);
-        User updatedUser = new User(existingUser.getId(), "newuser", "newuser@example.com", existingUser.getPasswordHash(), existingUser.getCreatedAt());
-        userRepository.updateUser(updatedUser);
+        String updatedUserName = "newuser";
+        String updatedUserEmail = "newuser@gmail.com";
 
-        User foundUser = userRepository.findByUsername("newuser");
-        assertNull(userRepository.findByUsername("testuser"), "Old username should no longer be found");
+        Long existingUserId = userRepository.findIdByUsername(username);
+
+        userRepository.updateUser(updatedUserName, updatedUserEmail, existingUserId);
+
+        User foundUser = userRepository.findByUsername(updatedUserName);
+        assertNull(userRepository.findByUsername(username), "Old username should no longer be found");
         assertNotNull(foundUser, "Updated user should be found");
-        assertEquals("newuser", foundUser.getUsername(), "Username should be updated");
-        assertEquals("newuser@example.com", foundUser.getEmail(), "Email should be updated");
+        assertEquals(updatedUserName, foundUser.getUsername(), "Username should be updated");
+        assertEquals(updatedUserEmail, foundUser.getEmail(), "Email should be updated");
         assertEquals(passwordHash, foundUser.getPasswordHash(), "Password hash should remain unchanged");
     }
 
     @Test
     void updateUser_userNotFound_throwsException(){
-        User noneExistenceUser = new User(999L, "noneExistenceUser", "noneExistenceUser@example" +
-                ".com", "hashedpassword", null);
-        assertThrows(UserNotFoundException.class, () -> userRepository.updateUser(noneExistenceUser), "Should throw " +
+        Long noneExistenceUserId = 90L;
+
+        assertThrows(UserNotFoundException.class, () -> userRepository.updateUser(
+                "noneexistenceuser",
+                "noneExistenceUser@gmail.com", noneExistenceUserId), "Should throw " +
                 "exception for non-existent user");
     }
 
@@ -396,8 +400,6 @@ public class UserRepositoryTest {
 
     @Test
     void setUserLocked_nonExistenceUser_throwsException(){
-        assertThrows(UserNotFoundException.class, () -> {
-            userRepository.setUserLocked("nonexistenteuser", true);
-        });
+        assertThrows(UserNotFoundException.class, () -> userRepository.setUserLocked("nonexistenteuser", true));
     }
 }

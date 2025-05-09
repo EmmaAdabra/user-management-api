@@ -16,7 +16,8 @@ public class UserRepositoryImpl implements UserRepository
                 rs.getString("username"),
                 rs.getString("email"),
                 rs.getString("password_hash"),
-                rs.getTimestamp("created_at").toLocalDateTime()
+                rs.getTimestamp("created_at").toLocalDateTime(),
+                rs.getBoolean("is_locked")
         );
 
     public UserRepositoryImpl(JdbcTemplate jdbcTemplate) {
@@ -88,12 +89,13 @@ public class UserRepositoryImpl implements UserRepository
     }
 
     @Override
-    public void updateUser(User user) {
-        int count = jdbcTemplate.update(UserSql.UPDATE_USER_USERNAME_EMAIL_BY_ID, user.getUsername(), user.getEmail(),
-                user.getId());
+    public void updateUser(String username, String email, Long userId) {
+        int count = jdbcTemplate.update(UserSql.UPDATE_USER_USERNAME_EMAIL_BY_ID, username,
+                email,
+                userId);
 
         if(count == 0){
-            throw new UserNotFoundException("User with ID - " + user.getId() + " not found");
+            throw new UserNotFoundException("User with ID - " + userId + " not found");
         }
     }
 
