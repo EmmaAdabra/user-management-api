@@ -1,7 +1,9 @@
 package com.adb.usermanagementapi.repository;
 
 import com.adb.usermanagementapi.config.TestConfig;
+import com.adb.usermanagementapi.model.User;
 import com.adb.usermanagementapi.model.dto.LoginAttempt;
+import com.adb.usermanagementapi.util.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,16 +43,19 @@ public class LoginAttemptsRepositoryTest {
     void logLoginAttempt_successful_logsCorrectly(){
         // Arrange
         String username = "testuser";
-        userRepository.save(username, "testuser@example.com", "hashedpassword");
-        Long userId = userRepository.findIdByUsername(username);
+        String email = "testuser@example.com";
+        String passwordHash = "hashedpassword";
+
+        User testUser = userRepository.save(TestUtils.getUser(username, email, passwordHash));
+
         int interOfFiveMinutes = 5;
 
         // Act
-        loginAttemptsRepository.logLoginAttempt(userId, false);
-        loginAttemptsRepository.logLoginAttempt(userId, false);
-        loginAttemptsRepository.logLoginAttempt(userId, true);
+        loginAttemptsRepository.logLoginAttempt(testUser.getId(), false);
+        loginAttemptsRepository.logLoginAttempt(testUser.getId(), false);
+        loginAttemptsRepository.logLoginAttempt(testUser.getId(), true);
 
-        List<LoginAttempt> loginAttemptList = loginAttemptsRepository.findRecentLogins(userId,
+        List<LoginAttempt> loginAttemptList = loginAttemptsRepository.findRecentLogins(testUser.getId(),
                 interOfFiveMinutes);
 
         // Assert
@@ -66,18 +71,18 @@ public class LoginAttemptsRepositoryTest {
         String email = "testuser@example.com";
         String passwordHash = "hashedpassword";
 
+        User testUser = userRepository.save(TestUtils.getUser(username, email, passwordHash));
+
+
         Timestamp failedTime1 = Timestamp.valueOf("2025-04-01 08:00:00");
         Timestamp failedTime2 = Timestamp.valueOf("2025-04-02 09:30:00");
         Timestamp successTime = Timestamp.valueOf("2025-04-03 11:00:00");
 
-        userRepository.save(username, email, passwordHash);
+        insertLoginAttempt(testUser.getId(), failedTime1, false);
+        insertLoginAttempt(testUser.getId(), failedTime2, false);
+        insertLoginAttempt(testUser.getId(), successTime, true);
 
-        Long userId = userRepository.findIdByUsername(username);
-        insertLoginAttempt(userId, failedTime1, false);
-        insertLoginAttempt(userId, failedTime2, false);
-        insertLoginAttempt(userId, successTime, true);
-
-        Timestamp result = loginAttemptsRepository.lastFailedLoginAttempt(userId);
+        Timestamp result = loginAttemptsRepository.lastFailedLoginAttempt(testUser.getId());
 
         assertEquals(failedTime2, result);
     }
@@ -88,13 +93,14 @@ public class LoginAttemptsRepositoryTest {
         String email = "testuser@example.com";
         String passwordHash = "hashedpassword";
 
+        User testUser = userRepository.save(TestUtils.getUser(username, email, passwordHash));
+
+
         Timestamp successTime = Timestamp.valueOf("2023-04-03 11:00:00");
 
-        userRepository.save(username, email, passwordHash);
-        Long userId = userRepository.findIdByUsername(username);
-        insertLoginAttempt(userId, successTime,true);
+        insertLoginAttempt(testUser.getId(), successTime,true);
 
-        Timestamp result = loginAttemptsRepository.lastFailedLoginAttempt(userId);
+        Timestamp result = loginAttemptsRepository.lastFailedLoginAttempt(testUser.getId());
 
         assertNull(result);
     }
@@ -108,20 +114,20 @@ public class LoginAttemptsRepositoryTest {
         String email = "testuser@example.com";
         String passwordHash = "hashedpassword";
 
-        userRepository.save(username, email, passwordHash);
+        User testUser = userRepository.save(TestUtils.getUser(username, email, passwordHash));
 
-        Long userId = userRepository.findIdByUsername(username);
-
-        insertLoginAttempt(userId, Timestamp.valueOf(LocalDateTime.now().minusMinutes(30)), false);
-        insertLoginAttempt(userId, Timestamp.valueOf(LocalDateTime.now()), false);
-        insertLoginAttempt(userId, Timestamp.valueOf(LocalDateTime.now()), true);
+        insertLoginAttempt(testUser.getId(), Timestamp.valueOf(LocalDateTime.now().minusMinutes(30)),
+                false);
+        insertLoginAttempt(testUser.getId(), Timestamp.valueOf(LocalDateTime.now()), false);
+        insertLoginAttempt(testUser.getId(), Timestamp.valueOf(LocalDateTime.now()), true);
 
         // get all login attempt within the last 10 minutes
-        List<LoginAttempt> loginAttemptList = loginAttemptsRepository.findRecentLogins(userId, 10);
+        List<LoginAttempt> loginAttemptList = loginAttemptsRepository.findRecentLogins(
+                testUser.getId(), 10);
 
         assertEquals(2, loginAttemptList.size(), "There should be 2 login attempt within 10 " +
                 "minutes for the user ID");
-        assertSame(loginAttemptList.get(0).userId(), userId);
+        assertSame(loginAttemptList.get(0).userId(), testUser.getId());
     }
 
     @Test
@@ -131,16 +137,15 @@ public class LoginAttemptsRepositoryTest {
         String email = "testuser@example.com";
         String passwordHash = "hashedpassword";
 
-        userRepository.save(username, email, passwordHash);
+        User testUser = userRepository.save(TestUtils.getUser(username, email, passwordHash));
 
-        Long userId = userRepository.findIdByUsername(username);
-
-        insertLoginAttempt(userId, Timestamp.valueOf(LocalDateTime.now().minusMinutes(30)), false);
-        insertLoginAttempt(userId, Timestamp.valueOf(LocalDateTime.now().minusMinutes(20)), false);
-        insertLoginAttempt(userId, Timestamp.valueOf(LocalDateTime.now().minusMinutes(15)), true);
+        insertLoginAttempt(testUser.getId(), Timestamp.valueOf(LocalDateTime.now().minusMinutes(30)), false);
+        insertLoginAttempt(testUser.getId(), Timestamp.valueOf(LocalDateTime.now().minusMinutes(20)), false);
+        insertLoginAttempt(testUser.getId(), Timestamp.valueOf(LocalDateTime.now().minusMinutes(15)), true);
 
         // get all login attempt within the last 10 minutes
-        List<LoginAttempt> loginAttemptList = loginAttemptsRepository.findRecentLogins(userId, 10);
+        List<LoginAttempt> loginAttemptList = loginAttemptsRepository.findRecentLogins(
+                testUser.getId(), 10);
 
         assertTrue(loginAttemptList.isEmpty(), "Should be no existing login attempts within " +
                 "the last 10 minutes for provided user ID");

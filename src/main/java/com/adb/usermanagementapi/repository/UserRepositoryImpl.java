@@ -5,7 +5,11 @@ import com.adb.usermanagementapi.model.User;
 import com.adb.usermanagementapi.util.UserSql;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
+import java.sql.PreparedStatement;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class UserRepositoryImpl implements UserRepository
@@ -25,9 +29,23 @@ public class UserRepositoryImpl implements UserRepository
     }
 
     @Override
-    public void save(String username, String email, String passwordHash) {
+    public User save(User user) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        jdbcTemplate.update(UserSql.INSERT_INTO_USERS, username, email, passwordHash);
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(UserSql.INSERT_INTO_USERS,
+                    new String[]{"id"});
+            ps.setString(1, user.getUsername());
+            ps.setString(2, user.getEmail());
+            ps.setString(3, user.getPasswordHash());
+
+            return ps;
+        }, keyHolder);
+
+        Long generatedId = keyHolder.getKey().longValue();
+
+        return new User(generatedId, user.getUsername(), user.getEmail(), user.getPasswordHash(),
+                user.getCreatedAt(), user.isLocked());
     }
 
     @Override

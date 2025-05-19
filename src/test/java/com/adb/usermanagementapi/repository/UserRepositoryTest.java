@@ -3,6 +3,7 @@ package com.adb.usermanagementapi.repository;
 import com.adb.usermanagementapi.config.TestConfig;
 import com.adb.usermanagementapi.exception.UserNotFoundException;
 import com.adb.usermanagementapi.model.User;
+import com.adb.usermanagementapi.util.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,6 @@ public class UserRepositoryTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-
     // run before each test, to ensure clean database state
     @BeforeEach
     void setUp(){
@@ -35,9 +35,9 @@ public class UserRepositoryTest {
         String username = "testuser";
         String email = "testuser@example.com";
         String passwordHash = "hashedpassword";
-
+        User testUser = TestUtils.getUser(username, email, passwordHash);
         // Act
-        userRepository.save(username, email, passwordHash);
+        userRepository.save(testUser);
 
         // Assert
         assertTrue(userRepository.existsByUsername(username), "User with the - " + username + " " +
@@ -61,13 +61,14 @@ public class UserRepositoryTest {
         String username = "testuser";
         String email = "testuser@example.com";
         String passwordHash = "hashedpassword";
+        User testUser = TestUtils.getUser(username, email, passwordHash);
 
         // Act
-        userRepository.save(username, email, passwordHash);
+        userRepository.save(testUser);
 
         // Assert
         assertThrows(org.springframework.dao.DataIntegrityViolationException.class, () ->
-            userRepository.save(username, "differentemail@@example.com", "differentHash"), "Should throw exception for duplicate username");
+            userRepository.save(testUser), "Should throw exception for duplicate username");
     }
 
     @Test
@@ -76,26 +77,31 @@ public class UserRepositoryTest {
         String username = "testuser";
         String email = "testuser@example.com";
         String passwordHash = "hashedpassword";
+        User testUser = TestUtils.getUser(username, email, passwordHash);
 
         // Act
-        userRepository.save(username, email, passwordHash);
+        userRepository.save(testUser);
 
-        assertThrows(org.springframework.dao.DataIntegrityViolationException.class, () ->
-            userRepository.save("differentUser", email, "differentHash"),
+        assertThrows(org.springframework.dao.DataIntegrityViolationException.class, () -> {
+                User differentUser = TestUtils.getUser("differrentuser", email, passwordHash);
+                userRepository.save(differentUser);},
                 "Should throw an exception, email already exist");
     }
 
     @Test
-        void userExistByUsername_userExist_returnsTrue(){
-            // Arrange
-            String username = "testuser";
-            String email = "testuser@example.com";
-            String passwordHash = "hashedpassword";
-            userRepository.save(username, email, passwordHash);
+    void userExistByUsername_userExist_returnsTrue(){
+        // Arrange
+        String username = "testuser";
+        String email = "testuser@example.com";
+        String passwordHash = "hashedpassword";
+        User user = TestUtils.getUser(username, email, passwordHash);
 
-            // Act
-            assertTrue(userRepository.existsByUsername(username), "should return true, user exist by " +
-                    "username");
+        User testUser = userRepository.save(user);
+
+        // Act
+        assertTrue(userRepository.existsByUsername(testUser.getUsername()), "should return true, user exist by" +
+                " " +
+                "username");
     }
 
     @Test
@@ -112,10 +118,12 @@ public class UserRepositoryTest {
         String username = "testuser";
         String email = "testuser@example.com";
         String passwordHash = "hashedpassword";
-        userRepository.save(username, email, passwordHash);
+        User user = TestUtils.getUser(username, email, passwordHash);
+
+        User testUser = userRepository.save(user);
 
         // Act
-        assertTrue(userRepository.existsByEmail(email), "should return true, " +
+        assertTrue(userRepository.existsByEmail(testUser.getEmail()), "should return true, " +
                 "user exist by email");
     }
 
@@ -133,10 +141,12 @@ public class UserRepositoryTest {
         String username = "testuser";
         String email = "testuser@example.com";
         String passwordHash = "hashedpassword";
-        userRepository.save(username, email, passwordHash);
+        User user = TestUtils.getUser(username, email, passwordHash);
+
+        User testUser = userRepository.save(user);
 
         //Act
-        Long userId = userRepository.findIdByUsername(username);
+        Long userId = userRepository.findIdByUsername(testUser.getUsername());
 
         // Assert
         assertNotNull(userId, "user ID should be found by username");
@@ -158,10 +168,12 @@ public class UserRepositoryTest {
         String username = "testuser";
         String email = "testuser@example.com";
         String passwordHash = "hashedpassword";
-        userRepository.save(username, email, passwordHash);
+        User user = TestUtils.getUser(username, email, passwordHash);
+
+        User testUser = userRepository.save(user);
 
         //Act
-        Long userId = userRepository.findIdByEmail(email);
+        Long userId = userRepository.findIdByEmail(testUser.getEmail());
 
         // Assert
         assertNotNull(userId, "user ID should be found by email");
@@ -183,16 +195,18 @@ public class UserRepositoryTest {
         String username = "testuser";
         String email = "testuser@example.com";
         String passwordHash = "hashedpassword";
-        userRepository.save(username, email, passwordHash);
+        User user = TestUtils.getUser(username, email, passwordHash);
+
+        userRepository.save(user);
 
         // Act
-        User user = userRepository.findByUsername(username);
+        User savedUser = userRepository.findByUsername(username);
 
-        assertNotNull(user, "User should be found");
-        assertEquals(username, user.getUsername(), "username should match");
-        assertEquals(email, user.getEmail(), "email should match");
-        assertEquals(passwordHash, user.getPasswordHash(), "passwordHash should match");
-        assertNotNull(user.getCreatedAt(), "Created at should be set");
+        assertNotNull(savedUser, "User should be found");
+        assertEquals(username, savedUser.getUsername(), "username should match");
+        assertEquals(email, savedUser.getEmail(), "email should match");
+        assertEquals(passwordHash, savedUser.getPasswordHash(), "passwordHash should match");
+        assertNotNull(savedUser.getCreatedAt(), "Created at should be set");
     }
 
     @Test
@@ -210,8 +224,8 @@ public class UserRepositoryTest {
     @Test
     void findAll_multipleUsers_returnsAllUsers() {
         // Arrange
-        userRepository.save("user1", "user1@example.com", "hash1");
-        userRepository.save("user2", "user2@example.com", "hash2");
+        userRepository.save(TestUtils.getUser("user1", "user1@example.com", "passwordhash1"));
+        userRepository.save(TestUtils.getUser("user2", "user2@example.com", "passwordhash2"));
 
         // Act
         List<User> users = userRepository.findAll();
@@ -238,16 +252,14 @@ public class UserRepositoryTest {
         String email = "testuser@example.com";
         String passwordHash = "hashedpassword";
 
-        userRepository.save(username, email, passwordHash);
+        User testUser = userRepository.save(TestUtils.getUser(username, email, passwordHash));
 
         String updatedUserName = "newuser";
         String updatedUserEmail = "newuser@gmail.com";
 
-        Long existingUserId = userRepository.findIdByUsername(username);
-
         // Act
         boolean isUpdated = userRepository.updateUser(updatedUserName, updatedUserEmail,
-                existingUserId);
+                testUser.getId());
 
         User foundUser = userRepository.findByUsername(updatedUserName);
 
@@ -278,8 +290,9 @@ public class UserRepositoryTest {
         String username = "testuser";
         String email = "testuser@example.com";
         String passwordHash = "hashedpassword";
+        User user = TestUtils.getUser(username, email, passwordHash);
 
-        userRepository.save(username, email, passwordHash);
+        userRepository.save(user);
 
         String updatedPassword = "newHashPassword";
 
@@ -299,13 +312,18 @@ public class UserRepositoryTest {
 
     @Test
     void deleteByUsername_success_returnsTrue() {
+        // Arrange
         String username = "testuser";
         String email = "testuser@example.com";
         String passwordHash = "hashedpassword";
-        userRepository.save(username, email, passwordHash);
+        User user = TestUtils.getUser(username, email, passwordHash);
 
+        userRepository.save(user);
+
+        // Act
         boolean isDeleted = userRepository.deleteByUsername(username);
 
+        // Assert
         assertTrue(isDeleted, "IsDeleted should be true");
         assertFalse(userRepository.existsByUsername(username), "User should be deleted");
         assertFalse(userRepository.existsByEmail(email), "User email should be deleted");
@@ -324,8 +342,9 @@ public class UserRepositoryTest {
         String username = "lockeduser";
         String email = "lockeduser@example.com";
         String passwordHash = "hashedpassword";
+        User user = TestUtils.getUser(username, email, passwordHash);
 
-        userRepository.save(username, email, passwordHash);
+        userRepository.save(user);
         userRepository.setUserLocked(username, true);
 
         // Act
@@ -341,10 +360,10 @@ public class UserRepositoryTest {
         String username = "testuser";
         String email = "testuser@example.com";
         String passwordHash = "hashedpassword";
+        User testUser = userRepository.save(TestUtils.getUser(username, email, passwordHash));
 
-        userRepository.save(username, email, passwordHash);
-        userRepository.setUserLocked(username, true); // false by default
-        userRepository.setUserLocked(username, false);
+        userRepository.setUserLocked(testUser.getUsername(), true); // false by default
+        userRepository.setUserLocked(testUser.getUsername(), false);
 
         // Act
         Boolean userLockStatus = userRepository.isUserLocked(username);
@@ -359,8 +378,7 @@ public class UserRepositoryTest {
         String username = "testuser";
         String email = "testuser@example.com";
         String passwordHash = "hashedpassword";
-
-        userRepository.save(username, email, passwordHash);
+        userRepository.save(TestUtils.getUser(username, email, passwordHash));
 
         // Act
         Boolean userLockStatus = userRepository.isUserLocked(username);
@@ -387,10 +405,10 @@ public class UserRepositoryTest {
         String email = "testuser@example.com";
         String passwordHash = "hashedpassword";
 
-        userRepository.save(username, email, passwordHash);
+        User testUser = userRepository.save(TestUtils.getUser(username, email, passwordHash));
 
         // Act
-        userRepository.setUserLocked(username, true);
+        userRepository.setUserLocked(testUser.getUsername(), true);
 
         // Assert
         assertTrue(userRepository.isUserLocked(username), "User locked status should be true");
@@ -403,10 +421,10 @@ public class UserRepositoryTest {
         String email = "testuser@example.com";
         String passwordHash = "hashedpassword";
 
-        userRepository.save(username, email, passwordHash);
+        User testUser = userRepository.save(TestUtils.getUser(username, email, passwordHash));
 
         // Act
-        userRepository.setUserLocked(username, false);
+        userRepository.setUserLocked(testUser.getUsername(), false);
 
         // Assert
         assertFalse(userRepository.isUserLocked(username), "User locked status should be false");

@@ -5,7 +5,7 @@ import com.adb.usermanagementapi.model.User;
 import java.util.List;
 
 public interface UserRepository {
-    void save(String username, String email, String passwordHash);
+    User save(User user);
     boolean existsByUsername(String username);
     boolean existsByEmail(String email);
     Long findIdByUsername(String username);
