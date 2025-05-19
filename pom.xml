@@ -46,7 +46,7 @@
       <version>2.3.232</version>
       <scope>runtime</scope>
     </dependency>
-    <!-- Bean validation -->
+    <!-- Jakarta Bean Validation API -->
     <dependency>
       <groupId>jakarta.validation</groupId>
       <artifactId>jakarta.validation-api</artifactId>
@@ -63,10 +63,19 @@
       <artifactId>spring-security-core</artifactId>
       <version>6.4.4</version>
     </dependency>
+    <!-- Hibernate Validator (implementation of Jakarta Validation API) -->
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-web</artifactId>
       <version>6.4.4</version>
+    </dependency>
+    <!-- Required for Java 8+ time support like LocalDateTime -->
+    <!-- https://mvnrepository.com/artifact/org.glassfish/jakarta.el -->
+    <dependency>
+      <groupId>org.glassfish</groupId>
+      <artifactId>jakarta.el</artifactId>
+      <version>4.0.2</version>
+      <scope>compile</scope>
     </dependency>
     <!-- SLF4J and Logback -->
     <dependency>
