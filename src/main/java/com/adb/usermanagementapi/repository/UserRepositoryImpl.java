@@ -127,14 +127,14 @@ public class UserRepositoryImpl implements UserRepository
 
     @Override
     public boolean updatePassword(Long id, String passwordHash) {
-        int count = jdbcTemplate.update(UserSql.UPDATE_USER_PASSWORD_BY_USERNAME, passwordHash, id);
+        int count = jdbcTemplate.update(UserSql.UPDATE_USER_PASSWORD_BY_ID, passwordHash, id);
 
         return count > 0;
     }
 
     @Override
     public boolean deleteUser(Long id) {
-        int count = jdbcTemplate.update(UserSql.DELETE_USER_BY_USERNAME, id);
+        int count = jdbcTemplate.update(UserSql.DELETE_USER_BY_ID, id);
 
         return count > 0;
     }
