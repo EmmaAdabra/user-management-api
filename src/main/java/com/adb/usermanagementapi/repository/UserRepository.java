@@ -15,8 +15,8 @@ public interface UserRepository {
     Optional<User> findById(Long id);
     List<User> findAll();
     boolean updateUser(User user);
-    boolean updatePassword(String username, String passwordHash);
-    boolean deleteByUsername(String username);
-    Boolean isUserLocked(String username);
-    void setUserLocked(String username, boolean locked);
+    boolean updatePassword(Long id, String passwordHash);
+    boolean updatePassword(Long id);
+    Boolean isUserLocked(Long id);
+    void setUserLocked(Long id, boolean locked);
 }

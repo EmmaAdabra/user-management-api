@@ -325,14 +325,12 @@ public class UserRepositoryTest {
         String username = "testuser";
         String email = "testuser@example.com";
         String passwordHash = "hashedpassword";
-        User user = TestUtils.getUser(username, email, passwordHash);
-
-        userRepository.save(user);
+        User user = userRepository.save(TestUtils.getUser(username, email, passwordHash));
 
         String updatedPassword = "newHashPassword";
 
         // Act
-        boolean isUpdated = userRepository.updatePassword(username, updatedPassword);
+        boolean isUpdated = userRepository.updatePassword(user.getId(), updatedPassword);
 
         // Assert
         assertTrue(isUpdated, "isUpdated should be true");
@@ -340,8 +338,13 @@ public class UserRepositoryTest {
 
     @Test
     void updatePassword_userNotFound_returnsFalse() {
-        boolean isUpdated = userRepository.updatePassword("noneuser", "newhashedpassword");
+        // Arrange
+        Long noneUserId = 90L;
 
+        // Act
+        boolean isUpdated = userRepository.updatePassword(noneUserId, "newhashedpassword");
+
+        // Assert
         assertFalse(isUpdated, "isUpdated should be for false for none user");
     }
 
@@ -351,12 +354,10 @@ public class UserRepositoryTest {
         String username = "testuser";
         String email = "testuser@example.com";
         String passwordHash = "hashedpassword";
-        User user = TestUtils.getUser(username, email, passwordHash);
-
-        userRepository.save(user);
+        User user = userRepository.save(TestUtils.getUser(username, email, passwordHash));
 
         // Act
-        boolean isDeleted = userRepository.deleteByUsername(username);
+        boolean isDeleted = userRepository.deleteByUsername(user.getId());
 
         // Assert
         assertTrue(isDeleted, "IsDeleted should be true");
@@ -366,7 +367,8 @@ public class UserRepositoryTest {
 
     @Test
     void deleteByUsername_userNotFound_returnsFalse() {
-        boolean isDeleted = userRepository.deleteByUsername("noneuser");
+        Long noneUserId = 90L;
+        boolean isDeleted = userRepository.deleteByUsername(noneUserId);
 
         assertFalse(isDeleted, "isDeleted should be false for none user");
     }
@@ -377,13 +379,12 @@ public class UserRepositoryTest {
         String username = "lockeduser";
         String email = "lockeduser@example.com";
         String passwordHash = "hashedpassword";
-        User user = TestUtils.getUser(username, email, passwordHash);
+        User user = userRepository.save(TestUtils.getUser(username, email, passwordHash));
 
-        userRepository.save(user);
-        userRepository.setUserLocked(username, true);
+        userRepository.setUserLocked(user.getId(), true);
 
         // Act
-        Boolean userLockStatus = userRepository.isUserLocked(username);
+        Boolean userLockStatus = userRepository.isUserLocked(user.getId());
 
         // Assert
         assertTrue(userLockStatus, "user locked status should be true");
@@ -397,11 +398,11 @@ public class UserRepositoryTest {
         String passwordHash = "hashedpassword";
         User testUser = userRepository.save(TestUtils.getUser(username, email, passwordHash));
 
-        userRepository.setUserLocked(testUser.getUsername(), true); // false by default
-        userRepository.setUserLocked(testUser.getUsername(), false);
+        userRepository.setUserLocked(testUser.getId(), true); // false by default
+        userRepository.setUserLocked(testUser.getId(), false);
 
         // Act
-        Boolean userLockStatus = userRepository.isUserLocked(username);
+        Boolean userLockStatus = userRepository.isUserLocked(testUser.getId());
 
         // Assert
         assertFalse(userLockStatus, "user locked status should be false");
@@ -413,10 +414,10 @@ public class UserRepositoryTest {
         String username = "testuser";
         String email = "testuser@example.com";
         String passwordHash = "hashedpassword";
-        userRepository.save(TestUtils.getUser(username, email, passwordHash));
+        User testUser = userRepository.save(TestUtils.getUser(username, email, passwordHash));
 
         // Act
-        Boolean userLockStatus = userRepository.isUserLocked(username);
+        Boolean userLockStatus = userRepository.isUserLocked(testUser.getId());
 
         // Assert
         assertFalse(userLockStatus, "user locked status should be false by default");
@@ -425,9 +426,9 @@ public class UserRepositoryTest {
     @Test
     void isUserLocked_userNotFound_returnsNull(){
         // Arrange
-        String noneExistenceUser = "testuser";
+        long noneUserId = 90L;
         // Act
-        Boolean userLockStatus = userRepository.isUserLocked(noneExistenceUser);
+        Boolean userLockStatus = userRepository.isUserLocked(noneUserId);
 
         // Assert
         assertNull(userLockStatus, "user not found, lock status should be null");
@@ -443,10 +444,10 @@ public class UserRepositoryTest {
         User testUser = userRepository.save(TestUtils.getUser(username, email, passwordHash));
 
         // Act
-        userRepository.setUserLocked(testUser.getUsername(), true);
+        userRepository.setUserLocked(testUser.getId(), true);
 
         // Assert
-        assertTrue(userRepository.isUserLocked(username), "User locked status should be true");
+        assertTrue(userRepository.isUserLocked(testUser.getId()), "User locked status should be true");
     }
 
     @Test
@@ -459,14 +460,15 @@ public class UserRepositoryTest {
         User testUser = userRepository.save(TestUtils.getUser(username, email, passwordHash));
 
         // Act
-        userRepository.setUserLocked(testUser.getUsername(), false);
+        userRepository.setUserLocked(testUser.getId(), false);
 
         // Assert
-        assertFalse(userRepository.isUserLocked(username), "User locked status should be false");
+        assertFalse(userRepository.isUserLocked(testUser.getId()), "User locked status should be false");
     }
 
     @Test
     void setUserLocked_nonExistenceUser_throwsException(){
-        assertThrows(UserNotFoundException.class, () -> userRepository.setUserLocked("nonexistenteuser", true));
+        Long noneUserId = 90L;
+        assertThrows(UserNotFoundException.class, () -> userRepository.setUserLocked(noneUserId, true));
     }
 }

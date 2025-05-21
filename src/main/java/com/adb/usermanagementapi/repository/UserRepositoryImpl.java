@@ -126,33 +126,33 @@ public class UserRepositoryImpl implements UserRepository
     }
 
     @Override
-    public boolean updatePassword(String username, String passwordHash) {
-        int count = jdbcTemplate.update(UserSql.UPDATE_USER_PASSWORD_BY_USERNAME, passwordHash, username);
+    public boolean updatePassword(Long id, String passwordHash) {
+        int count = jdbcTemplate.update(UserSql.UPDATE_USER_PASSWORD_BY_USERNAME, passwordHash, id);
 
         return count > 0;
     }
 
     @Override
-    public boolean deleteByUsername(String username) {
-        int count = jdbcTemplate.update(UserSql.DELETE_USER_BY_USERNAME, username);
+    public boolean deleteByUsername(Long id) {
+        int count = jdbcTemplate.update(UserSql.DELETE_USER_BY_USERNAME, id);
 
         return count > 0;
     }
 
     @Override
-    public Boolean isUserLocked(String username) {
+    public Boolean isUserLocked(Long id) {
         try{
-            return jdbcTemplate.queryForObject(UserSql.IS_USER_LOCKED, Boolean.class, username);
+            return jdbcTemplate.queryForObject(UserSql.IS_USER_LOCKED, Boolean.class, id);
         } catch (org.springframework.dao.EmptyResultDataAccessException e) {
             return null;
         }
     }
 
     @Override
-    public void setUserLocked(String username, boolean lockedStatus) {
-        int rows = jdbcTemplate.update(UserSql.UPDATE_USER_LOCK_STATUS, lockedStatus, username);
+    public void setUserLocked(Long id, boolean lockedStatus) {
+        int rows = jdbcTemplate.update(UserSql.UPDATE_USER_LOCK_STATUS, lockedStatus, id);
         if (rows == 0) {
-            throw new UserNotFoundException("User not found: " + username);
+            throw new UserNotFoundException("User not found: " + id);
         }
     }
 }
