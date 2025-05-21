@@ -1,13 +1,12 @@
-package com.adb.usermanagementapi.util;
+package com.adb.usermanagementapi.model;
 
 import com.adb.usermanagementapi.dto.request.UserCreateRequestDTO;
 import com.adb.usermanagementapi.dto.response.UserResponseDTO;
-import com.adb.usermanagementapi.model.User;
 
 import java.time.LocalDateTime;
 
 public class UserMapper {
-    public static UserResponseDTO toUserResponseDTO(User user){
+    public UserResponseDTO toUserResponseDTO(User user){
         return new UserResponseDTO(
                 user.getId(),
                 user.getUsername(),
@@ -17,7 +16,17 @@ public class UserMapper {
         );
     }
 
-    public static User toUser(UserCreateRequestDTO userCreateRequestDTO){
+    public User toUser(UserCreateRequestDTO userCreateRequestDTO, String passwordHash){
+        return new User(
+                null,
+                userCreateRequestDTO.getUsername(),
+                userCreateRequestDTO.getEmail(),
+                passwordHash,
+                LocalDateTime.now(),
+                false
+        );
+    }
+    public User toUser(UserCreateRequestDTO userCreateRequestDTO){
         return new User(
                 null,
                 userCreateRequestDTO.getUsername(),
@@ -27,4 +36,6 @@ public class UserMapper {
                 false
         );
     }
+
+
 }
