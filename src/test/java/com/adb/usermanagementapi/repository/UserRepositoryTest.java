@@ -349,7 +349,7 @@ public class UserRepositoryTest {
     }
 
     @Test
-    void deleteByUsername_success_returnsTrue() {
+    void deleteUser_success_returnsTrue() {
         // Arrange
         String username = "testuser";
         String email = "testuser@example.com";
@@ -357,7 +357,7 @@ public class UserRepositoryTest {
         User user = userRepository.save(TestUtils.getUser(username, email, passwordHash));
 
         // Act
-        boolean isDeleted = userRepository.deleteByUsername(user.getId());
+        boolean isDeleted = userRepository.deleteUser(user.getId());
 
         // Assert
         assertTrue(isDeleted, "IsDeleted should be true");
@@ -366,9 +366,9 @@ public class UserRepositoryTest {
     }
 
     @Test
-    void deleteByUsername_userNotFound_returnsFalse() {
+    void deleteUser_userNotFound_returnsFalse() {
         Long noneUserId = 90L;
-        boolean isDeleted = userRepository.deleteByUsername(noneUserId);
+        boolean isDeleted = userRepository.deleteUser(noneUserId);
 
         assertFalse(isDeleted, "isDeleted should be false for none user");
     }

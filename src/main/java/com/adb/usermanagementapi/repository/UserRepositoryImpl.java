@@ -133,7 +133,7 @@ public class UserRepositoryImpl implements UserRepository
     }
 
     @Override
-    public boolean deleteByUsername(Long id) {
+    public boolean deleteUser(Long id) {
         int count = jdbcTemplate.update(UserSql.DELETE_USER_BY_USERNAME, id);
 
         return count > 0;
