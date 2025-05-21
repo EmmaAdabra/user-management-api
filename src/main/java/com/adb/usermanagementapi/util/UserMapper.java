@@ -17,7 +17,7 @@ public class UserMapper {
         );
     }
 
-    public static User toModel(UserCreateRequestDTO userCreateRequestDTO){
+    public static User toUser(UserCreateRequestDTO userCreateRequestDTO){
         return new User(
                 null,
                 userCreateRequestDTO.getUsername(),
