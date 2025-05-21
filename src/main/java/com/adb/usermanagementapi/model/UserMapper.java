@@ -2,9 +2,12 @@ package com.adb.usermanagementapi.model;
 
 import com.adb.usermanagementapi.dto.request.UserCreateRequestDTO;
 import com.adb.usermanagementapi.dto.response.UserResponseDTO;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
+@Component
 public class UserMapper {
     public UserResponseDTO toUserResponseDTO(User user){
         return new UserResponseDTO(
@@ -36,6 +39,4 @@ public class UserMapper {
                 false
         );
     }
-
-
 }
