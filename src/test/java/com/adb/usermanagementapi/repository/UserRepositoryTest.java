@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -216,6 +218,38 @@ public class UserRepositoryTest {
     }
 
     @Test
+    void findByID_UserExists_returnsUser(){
+        // Arrange
+        String username = "testuser";
+        String email = "testuser@example.com";
+        String passwordHash = "hashedpassword";
+        User user = TestUtils.getUser(username, email, passwordHash);
+
+        userRepository.save(user);
+
+        Long existingUserId = userRepository.findIdByUsername(username);
+
+        // Act
+        Optional<User> existingUser = userRepository.findById(existingUserId);
+
+        assertFalse(existingUser.isEmpty(), "existing user should not be empty");
+        assertNotNull(existingUser.get(), "User should be found");
+        assertEquals(username, existingUser.get().getUsername(), "username should match");
+        assertEquals(email, existingUser.get().getEmail(), "email should match");
+        assertEquals(passwordHash, existingUser.get().getPasswordHash(), "passwordHash should " +
+                "match");
+        assertNotNull(existingUser.get().getCreatedAt(), "Created at should be set");
+    }
+
+    @Test
+    void findByID_userDoesNotExist_returnsNull() {
+        Long noneUserId = 90L;
+
+        Optional<User> userOptional = userRepository.findById(noneUserId);
+        assertTrue(userOptional.isEmpty(), "None user should be empty");
+    }
+
+    @Test
     void findAll_noUser_returnEmptyList(){
         List<User> users = userRepository.findAll();
         assertTrue(users.isEmpty(), "Should return empty list when no users exist");
@@ -256,10 +290,11 @@ public class UserRepositoryTest {
 
         String updatedUserName = "newuser";
         String updatedUserEmail = "newuser@gmail.com";
+        User updatedUser = new User(testUser.getId(), updatedUserName, updatedUserEmail,
+                passwordHash, testUser.getCreatedAt(), testUser.isLocked());
 
         // Act
-        boolean isUpdated = userRepository.updateUser(updatedUserName, updatedUserEmail,
-                testUser.getId());
+        boolean isUpdated = userRepository.updateUser(updatedUser);
 
         User foundUser = userRepository.findByUsername(updatedUserName);
 
@@ -276,10 +311,10 @@ public class UserRepositoryTest {
     void updateUser_userNotFound_returnsFalse(){
         // Arrange
         Long noneExistenceUserId = 90L;
-
+        User noneUser = new User(noneExistenceUserId,"noneuser", "noneuser" +
+                "@example.com", "passwordHash", LocalDateTime.now(), false);
         // Act
-        boolean isUpdated = userRepository.updateUser("noneuser", "noneuser@gmail.com",
-                noneExistenceUserId);
+        boolean isUpdated = userRepository.updateUser(noneUser);
 
         assertFalse(isUpdated,"Should be false for a none user");
     }
