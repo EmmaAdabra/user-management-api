@@ -9,8 +9,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.PreparedStatement;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public class UserRepositoryImpl implements UserRepository
 {
@@ -100,6 +100,17 @@ public class UserRepositoryImpl implements UserRepository
             return null;
         }
     }
+    @Override
+    public Optional<User> findById(Long id) {
+        User user;
+        try {
+            user = jdbcTemplate.queryForObject(UserSql.SELECT_USER_BY_ID, USER_ROW_MAPPER,
+                    id);
+        } catch (org.springframework.dao.EmptyResultDataAccessException e){
+            user = null;
+        }
+        return Optional.ofNullable(user);
+    }
 
     @Override
     public List<User> findAll() {
@@ -107,10 +118,9 @@ public class UserRepositoryImpl implements UserRepository
     }
 
     @Override
-    public boolean updateUser(String username, String email, Long userId) {
-        int count = jdbcTemplate.update(UserSql.UPDATE_USER_USERNAME_EMAIL_BY_ID, username,
-                email,
-                userId);
+    public boolean updateUser(User user) {
+        int count = jdbcTemplate.update(UserSql.UPDATE_USER_USERNAME_EMAIL_BY_ID, user.getUsername(),
+                user.getEmail(), user.getId());
 
         return count > 0;
     }
