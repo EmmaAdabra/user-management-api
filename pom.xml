@@ -114,17 +114,31 @@
       <version>${spring.version}</version>
       <scope>test</scope>
     </dependency>
+    <!-- Mockito -->
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>5.17.0</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- Mockito JUnit Jupiter (for JUnit 5 integration) -->
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
+      <version>5.2.0</version> <!-- Match the version of mockito-core -->
+      <scope>test</scope>
+    </dependency>
     <!-- JUnit 5 -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
-      <version>5.10.2</version>
+      <version>5.11.4</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
-      <version>5.10.2</version>
+      <version>5.11.4</version>
       <scope>test</scope>
     </dependency>
     <!-- Swagger/OpenAPI -->
