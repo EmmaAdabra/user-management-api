@@ -1,8 +1,10 @@
-package com.adb.usermanagementapi.repository;
+package repository;
 
-import com.adb.usermanagementapi.config.TestConfig;
+import com.adb.usermanagementapi.config.TestUserRepositoryConfig;
 import com.adb.usermanagementapi.model.User;
 import com.adb.usermanagementapi.model.dto.LoginAttempt;
+import com.adb.usermanagementapi.repository.LoginAttemptsRepository;
+import com.adb.usermanagementapi.repository.UserRepository;
 import com.adb.usermanagementapi.util.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +18,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringJUnitConfig(TestConfig.class)
+@SpringJUnitConfig(TestUserRepositoryConfig.class)
 public class LoginAttemptsRepositoryTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
