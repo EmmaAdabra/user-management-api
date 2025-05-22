@@ -1,8 +1,9 @@
-package com.adb.usermanagementapi.repository;
+package repository;
 
-import com.adb.usermanagementapi.config.TestConfig;
+import com.adb.usermanagementapi.config.TestUserRepositoryConfig;
 import com.adb.usermanagementapi.exception.UserNotFoundException;
 import com.adb.usermanagementapi.model.User;
+import com.adb.usermanagementapi.repository.UserRepository;
 import com.adb.usermanagementapi.util.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 // load beans form the application isolated test context for the tests
-@SpringJUnitConfig(TestConfig.class)
+@SpringJUnitConfig(TestUserRepositoryConfig.class)
 public class UserRepositoryTest {
     @Autowired
     private UserRepository userRepository;
