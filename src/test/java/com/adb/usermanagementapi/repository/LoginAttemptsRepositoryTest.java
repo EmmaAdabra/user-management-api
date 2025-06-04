@@ -1,4 +1,4 @@
-package repository;
+package com.adb.usermanagementapi.repository;
 
 import com.adb.usermanagementapi.config.TestUserRepositoryConfig;
 import com.adb.usermanagementapi.model.User;
