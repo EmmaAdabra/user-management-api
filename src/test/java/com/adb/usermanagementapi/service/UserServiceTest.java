@@ -2,8 +2,10 @@ package com.adb.usermanagementapi.service;
 
 import com.adb.usermanagementapi.config.TestUserServiceConfig;
 import com.adb.usermanagementapi.dto.request.UserCreateRequestDTO;
+import com.adb.usermanagementapi.dto.request.UserUpdateDTO;
 import com.adb.usermanagementapi.dto.response.UserResponseDTO;
 import com.adb.usermanagementapi.exception.DuplicateResourceException;
+import com.adb.usermanagementapi.exception.UserNotFoundException;
 import com.adb.usermanagementapi.model.User;
 import com.adb.usermanagementapi.model.UserMapper;
 import com.adb.usermanagementapi.repository.UserRepository;
@@ -14,6 +16,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -103,5 +106,142 @@ public class UserServiceTest {
         verify(userRepository).existsByUsername(requestDTO.getUsername());
         verify(userRepository).existsByEmail(requestDTO.getEmail());
         verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void updateUser_success_returnsResponseDTO(){
+        // Arrange
+        String newUsername = "new_username";
+        String newEmail = "new_username@example.com";
+        UserUpdateDTO userUpdateDTO = new UserUpdateDTO();
+
+        userUpdateDTO.setUsername(newUsername);
+        userUpdateDTO.setEmail(newEmail);
+
+        Long existingUserId = 1L;
+
+        User existingUser = new User(existingUserId,
+                "old_username",
+                "old_username@example.com",
+             "@00#@00%",
+                LocalDateTime.now(),
+                false
+        );
+
+        User updatedUser = new User(
+                existingUserId,
+                newUsername,
+                newEmail,
+                existingUser.getPasswordHash(),
+                existingUser.getCreatedAt(),
+                false
+        );
+
+        when(userRepository.findById(existingUserId)).thenReturn(Optional.of(existingUser));
+        when(userRepository.existsByUsername(newUsername)).thenReturn(false);
+        when(userRepository.existsByEmail(newEmail)).thenReturn(false);
+        when(userRepository.updateUser(updatedUser)).thenReturn(true);
+
+        UserResponseDTO expectedResponse = new UserResponseDTO(1L, updatedUser.getUsername(),
+                updatedUser.getEmail(),  false, updatedUser.getCreatedAt());
+        when(userMapper.toUserResponseDTO(any(User.class))).thenReturn(expectedResponse);
+
+        // Act
+       UserResponseDTO result = userService.updateUser(existingUserId, userUpdateDTO);
+
+        // Assert
+        assertEquals(expectedResponse, result, "The expected response object should be the same " +
+                "with the result");
+        verify(userRepository).findById(existingUserId);
+        verify(userRepository).existsByUsername(newUsername);
+        verify(userRepository).existsByEmail(newEmail);
+        verify(userRepository).updateUser(any(User.class));
+    }
+
+    @Test
+    void updateUser_invalidUserId_throwsException() {
+        // Arrange
+        Long invalidId = 90L;
+        when(userRepository.findById(invalidId)).thenReturn(Optional.ofNullable(null));
+
+        UserUpdateDTO userUpdateDTO = new UserUpdateDTO();
+        userUpdateDTO.setUsername("test_user");
+        userUpdateDTO.setEmail("test_user@example.com");
+
+        // Act
+        UserNotFoundException ex = assertThrows(UserNotFoundException.class,
+                () -> userService.updateUser(invalidId, userUpdateDTO));
+
+        // Assert
+        assertEquals("User not found", ex.getMessage(), "error message should be 'User not found'");
+        verify(userRepository, never()).existsByEmail(anyString());
+        verify(userRepository, never()).existsByUsername(anyString());
+        verify(userRepository, never()).updateUser(any(User.class));
+    }
+
+    @Test
+    void updateUser_duplicateUserName_throwsException(){
+        // Arrange
+        String newUsername = "some_existingUsername";
+        String newEmail = "user_email@example.com";
+        UserUpdateDTO userUpdateDTO = new UserUpdateDTO();
+
+        userUpdateDTO.setUsername(newUsername);
+        userUpdateDTO.setEmail(newEmail);
+
+        Long existingUserId = 1L;
+
+        User existingUser = new User(existingUserId,
+                "old_username",
+                "old_username@example.com",
+                "@00#@00%",
+                LocalDateTime.now(),
+                false);
+
+
+        when(userRepository.findById(existingUserId)).thenReturn(Optional.of(existingUser));
+        when(userRepository.existsByUsername(newUsername)).thenReturn(true);
+
+        // Act and Assert
+        DuplicateResourceException ex = assertThrows(DuplicateResourceException.class,
+                () -> userService.updateUser(existingUserId, userUpdateDTO));
+
+        assertEquals("Username already exist", ex.getMessage(), "should throw exception duplicate" +
+                " username");
+        verify(userRepository, never()).existsByEmail(anyString());
+        verify(userRepository, never()).updateUser(any(User.class));
+    }
+
+    @Test
+    void updateUser_duplicateEmail_throwsException(){
+        // Arrange
+        String newUsername = "newUsername";
+        String newEmail = "some_existing_email@example.com";
+        UserUpdateDTO userUpdateDTO = new UserUpdateDTO();
+
+        userUpdateDTO.setUsername(newUsername);
+        userUpdateDTO.setEmail(newEmail);
+
+        Long existingUserId = 1L;
+
+        User existingUser = new User(existingUserId,
+                "old_username",
+                "old_username@example.com",
+                "@00#@00%",
+                LocalDateTime.now(),
+                false);
+
+
+        when(userRepository.findById(existingUserId)).thenReturn(Optional.of(existingUser));
+        when(userRepository.existsByUsername(newUsername)).thenReturn(false);
+        when(userRepository.existsByEmail(newEmail)).thenReturn(true);
+
+        // Act and Assert
+        DuplicateResourceException ex = assertThrows(DuplicateResourceException.class,
+                () -> userService.updateUser(existingUserId, userUpdateDTO));
+
+        assertEquals("Email already exist", ex.getMessage(), "should throw exception for " +
+                "duplicated email");
+        verify(userRepository, never()).updateUser(any(User.class));
     }
 }
