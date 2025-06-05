@@ -244,4 +244,53 @@ public class UserServiceTest {
                 "duplicated email");
         verify(userRepository, never()).updateUser(any(User.class));
     }
+
+    @Test
+    void getUserById_existingUser_returnsUserResponseDTO(){
+        // Arrange
+        Long existingUserId = 1L;
+        User user = new User(
+                existingUserId,
+                "username",
+                "username@example.com",
+                "hashedPassword",
+                LocalDateTime.now(),
+                false
+        );
+
+        when(userRepository.findById(existingUserId)).thenReturn(Optional.of(user));
+
+        UserResponseDTO expectedResponse = new UserResponseDTO(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.isLocked(),
+                user.getCreatedAt()
+        );
+
+        when(userMapper.toUserResponseDTO(user)).thenReturn(expectedResponse);
+
+        // Act
+        UserResponseDTO result = userService.getUserById(existingUserId);
+
+        // Assert
+        assertEquals(expectedResponse, result);
+        verify(userRepository).findById(existingUserId);
+        verify(userMapper).toUserResponseDTO(user);
+    }
+
+    @Test
+    void getUserById_userNotFound_throwsException(){
+        Long invalidUserId = 90L;
+
+        when(userRepository.findById(invalidUserId)).thenReturn(Optional.ofNullable(null));
+
+        UserNotFoundException ex = assertThrows(UserNotFoundException.class,
+                () -> userService.getUserById(invalidUserId));
+
+        assertEquals("User not found", ex.getMessage());
+        verify(userRepository).findById(invalidUserId);
+        verify(userMapper, never()).toUserResponseDTO(any(User.class));
+    }
+
 }
