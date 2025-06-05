@@ -364,4 +364,33 @@ public class UserServiceTest {
         verify(userRepository).findAll();
         verifyNoInteractions(userMapper);
     }
+
+    @Test
+    void updatePassword_success(){
+        // Arrange
+        Long userId = 1L;
+        User mockUser = mock(User.class);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser));
+        when(userRepository.updatePassword(eq(userId), anyString())).thenReturn(true);
+
+        // Act
+        userService.updatePassword(userId, "new_password");
+
+        // Assert
+        verify(userRepository).updatePassword(eq(userId), anyString());
+        verify(userRepository).findById(userId);
+    }
+
+    @Test
+    void updatePassword_invalidUserId_throwsException(){
+        Long noneExistingUserId = 90L;
+
+        when(userRepository.findById(noneExistingUserId)).thenReturn(Optional.ofNullable(null));
+
+        UserNotFoundException ex = assertThrows(UserNotFoundException.class,
+                () -> userService.updatePassword(noneExistingUserId, "new_password"));
+
+        assertEquals("User not found", ex.getMessage());
+        verify(userRepository, never()).updatePassword(anyLong(), anyString());
+    }
 }
