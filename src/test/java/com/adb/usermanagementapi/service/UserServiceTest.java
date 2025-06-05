@@ -16,6 +16,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -293,4 +295,56 @@ public class UserServiceTest {
         verify(userMapper, never()).toUserResponseDTO(any(User.class));
     }
 
+    @Test
+    void getAllUsers_returnsListOfUserResponseDTO(){
+        User user1 = new User(
+                1L,
+                "username1",
+                "username1@example.com",
+                "hashedPassword",
+                LocalDateTime.now(),
+                false
+        );
+
+        User user2 = new User(
+                2L,
+                "username2",
+                "username2@example.com",
+                "hashedPassword",
+                LocalDateTime.now(),
+                false
+        );
+
+        UserResponseDTO dto1 = new UserResponseDTO(
+                user1.getId(),
+                user1.getUsername(),
+                user1.getEmail(),
+                user1.isLocked(),
+                user1.getCreatedAt()
+        );
+
+        UserResponseDTO dto2 = new UserResponseDTO(
+                user2.getId(),
+                user2.getUsername(),
+                user2.getEmail(),
+                user2.isLocked(),
+                user2.getCreatedAt()
+        );
+
+        List<User> userList = List.of(user1,user2);
+
+        when(userRepository.findAll()).thenReturn(userList);
+        when(userMapper.toUserResponseDTO(user1)).thenReturn(dto1);
+        when(userMapper.toUserResponseDTO(user2)).thenReturn(dto2);
+
+        List<UserResponseDTO> result = userService.getAllUsers();
+
+        assertEquals(2, result.size());
+        assertTrue(result.contains(dto1));
+        assertTrue(result.contains(dto2));
+
+        verify(userRepository).findAll();
+        verify(userMapper).toUserResponseDTO(user1);
+        verify(userMapper).toUserResponseDTO(user2);
+    }
 }
