@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
         }
 
         if(userRepository.existsByEmail(request.getEmail())
-                && existingUser.getEmail().equals(request.getEmail())){
+                && !existingUser.getEmail().equals(request.getEmail())){
             throw new DuplicateResourceException("Email already exist");
         }
 
