@@ -297,6 +297,7 @@ public class UserServiceTest {
 
     @Test
     void getAllUsers_returnsListOfUserResponseDTO(){
+        // Arrange
         User user1 = new User(
                 1L,
                 "username1",
@@ -337,8 +338,10 @@ public class UserServiceTest {
         when(userMapper.toUserResponseDTO(user1)).thenReturn(dto1);
         when(userMapper.toUserResponseDTO(user2)).thenReturn(dto2);
 
+        // Act
         List<UserResponseDTO> result = userService.getAllUsers();
 
+        // Assert
         assertEquals(2, result.size());
         assertTrue(result.contains(dto1));
         assertTrue(result.contains(dto2));
@@ -346,5 +349,19 @@ public class UserServiceTest {
         verify(userRepository).findAll();
         verify(userMapper).toUserResponseDTO(user1);
         verify(userMapper).toUserResponseDTO(user2);
+    }
+
+    @Test
+    void getAllUsers_returnsEmptyList(){
+        // Arrange
+        when(userRepository.findAll()).thenReturn(Collections.emptyList());
+
+        // Act
+        List<UserResponseDTO> result = userService.getAllUsers();
+
+        // Assert
+        assertTrue(result.isEmpty());
+        verify(userRepository).findAll();
+        verifyNoInteractions(userMapper);
     }
 }
