@@ -393,4 +393,37 @@ public class UserServiceTest {
         assertEquals("User not found", ex.getMessage());
         verify(userRepository, never()).updatePassword(anyLong(), anyString());
     }
+
+    @Test
+    void deleteUser_success(){
+        // Arrange
+        Long userId = 1L;
+        User mockUser = mock(User.class);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser));
+        when(userRepository.deleteUser(userId)).thenReturn(true);
+
+        // Act
+        userService.deleteUser(userId);
+
+        // Assert
+        verify(userRepository).deleteUser(userId);
+        verify(userRepository).findById(userId);
+    }
+
+    @Test
+    void deleteUser_noneExistingUserId(){
+        // Arrange
+        Long noneExistingUserId = 90L;
+
+        when(userRepository.findById(noneExistingUserId)).thenReturn(Optional.ofNullable(null));
+
+        // Act and Assert
+        UserNotFoundException ex = assertThrows(UserNotFoundException.class,
+                () -> userService.deleteUser(noneExistingUserId));
+
+        assertEquals("User not found", ex.getMessage());
+        verify(userRepository).findById(noneExistingUserId);
+        verify(userRepository, never()).deleteUser(anyLong());
+    }
 }
