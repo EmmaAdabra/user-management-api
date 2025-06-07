@@ -34,12 +34,12 @@ public class LoginAttemptsRepositoryImpl implements LoginAttemptsRepository{
     }
 
     @Override
-    public void logLoginAttempt(Long userId, boolean success) {
+    public void saveLoginAttempt(Long userId, boolean success) {
         jdbcTemplate.update(INSERT_INTO_LOGIN_ATTEMPTS_BY_ID, userId, LocalDateTime.now(), success);
     }
 
     @Override
-    public Timestamp lastFailedLoginAttempt(Long user_id) {
+    public Timestamp findLastFailedLoginAttempt(Long user_id) {
         try {
             return jdbcTemplate.queryForObject(SELECT_LAST_FAILED_ATTEMPTS_TIME, Timestamp.class, user_id);
         } catch (EmptyResultDataAccessException e){

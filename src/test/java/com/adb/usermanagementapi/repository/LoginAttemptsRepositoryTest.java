@@ -51,9 +51,9 @@ public class LoginAttemptsRepositoryTest {
         int interOfFiveMinutes = 5;
 
         // Act
-        loginAttemptsRepository.logLoginAttempt(testUser.getId(), false);
-        loginAttemptsRepository.logLoginAttempt(testUser.getId(), false);
-        loginAttemptsRepository.logLoginAttempt(testUser.getId(), true);
+        loginAttemptsRepository.saveLoginAttempt(testUser.getId(), false);
+        loginAttemptsRepository.saveLoginAttempt(testUser.getId(), false);
+        loginAttemptsRepository.saveLoginAttempt(testUser.getId(), true);
 
         List<LoginAttempt> loginAttemptList = loginAttemptsRepository.findRecentLogins(testUser.getId(),
                 interOfFiveMinutes);
@@ -82,7 +82,7 @@ public class LoginAttemptsRepositoryTest {
         insertLoginAttempt(testUser.getId(), failedTime2, false);
         insertLoginAttempt(testUser.getId(), successTime, true);
 
-        Timestamp result = loginAttemptsRepository.lastFailedLoginAttempt(testUser.getId());
+        Timestamp result = loginAttemptsRepository.findLastFailedLoginAttempt(testUser.getId());
 
         assertEquals(failedTime2, result);
     }
@@ -100,7 +100,7 @@ public class LoginAttemptsRepositoryTest {
 
         insertLoginAttempt(testUser.getId(), successTime,true);
 
-        Timestamp result = loginAttemptsRepository.lastFailedLoginAttempt(testUser.getId());
+        Timestamp result = loginAttemptsRepository.findLastFailedLoginAttempt(testUser.getId());
 
         assertNull(result);
     }
