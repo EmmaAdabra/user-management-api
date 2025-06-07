@@ -2,9 +2,7 @@ package com.adb.usermanagementapi.repository;
 
 import com.adb.usermanagementapi.config.TestUserRepositoryConfig;
 import com.adb.usermanagementapi.model.User;
-import com.adb.usermanagementapi.model.dto.LoginAttempt;
-import com.adb.usermanagementapi.repository.LoginAttemptsRepository;
-import com.adb.usermanagementapi.repository.UserRepository;
+import com.adb.usermanagementapi.model.login.LoginAttempt;
 import com.adb.usermanagementapi.util.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -110,7 +108,7 @@ public class LoginAttemptsRepositoryTest {
 
 
     @Test
-    void findRecentLogins_existingLoginsWithinSpecificInterval_returnsNonEmptyList(){
+    void findRecentLogins_existsLoginsWithinSpecificInterval_returnsNonEmptyList(){
         // Arrange
         String username = "testuser";
         String email = "testuser@example.com";

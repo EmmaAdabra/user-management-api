@@ -1,4 +1,4 @@
-package com.adb.usermanagementapi.model.dto;
+package com.adb.usermanagementapi.model.login;
 
 import java.time.LocalDateTime;
 

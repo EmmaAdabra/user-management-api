@@ -1,6 +1,6 @@
 package com.adb.usermanagementapi.repository;
 
-import com.adb.usermanagementapi.model.dto.LoginAttempt;
+import com.adb.usermanagementapi.model.login.LoginAttempt;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -56,11 +56,5 @@ public class LoginAttemptsRepositoryImpl implements LoginAttemptsRepository{
         } catch (org.springframework.dao.EmptyResultDataAccessException e){
             return  Collections.emptyList();
         }
-    }
-
-    @Override
-    public int countFailedAttemptsInLastTwoMinutes(Long userId) {
-        LocalDateTime twoMinutesAgo = LocalDateTime.now().minusMinutes(2);
-        return jdbcTemplate.queryForObject(SELECT_RECENT_LOGIN_WITHIN_GIVEN_TIME, Integer.class, userId, false, twoMinutesAgo);
     }
 }
