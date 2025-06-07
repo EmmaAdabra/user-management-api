@@ -4,17 +4,17 @@ import jakarta.validation.constraints.NotBlank;
 
 public class LoginRequestDTO {
     @NotBlank(message = "Username or email must not be blank")
-    private String usernameOrEmail;
+    private String userEmail;
     @NotBlank(message = "Password should not be blank")
     private String plainPassword;
 
     // Getters and setters
-    public String getUsernameOrEmail() {
-        return usernameOrEmail;
+    public String getUserEmail() {
+        return userEmail;
     }
 
     public void setUsernameOrEmail(String usernameOrEmail) {
-        this.usernameOrEmail = usernameOrEmail;
+        this.userEmail = usernameOrEmail;
     }
 
     public String getPlainPassword() {
