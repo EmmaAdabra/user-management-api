@@ -251,6 +251,36 @@ public class UserRepositoryTest {
     }
 
     @Test
+    void findByEmail_UserExists_returnsUser(){
+        // Arrange
+        String username = "testuser";
+        String email = "testuser@example.com";
+        String passwordHash = "hashedpassword";
+        User user = TestUtils.getUser(username, email, passwordHash);
+
+        userRepository.save(user);
+
+        // Act
+        Optional<User> existingUser = userRepository.findByEmail(email);
+
+        assertFalse(existingUser.isEmpty(), "existing user should not be empty");
+        assertNotNull(existingUser.get(), "User should be found");
+        assertEquals(username, existingUser.get().getUsername(), "username should match");
+        assertEquals(email, existingUser.get().getEmail(), "email should match");
+        assertEquals(passwordHash, existingUser.get().getPasswordHash(), "passwordHash should " +
+                "match");
+        assertNotNull(existingUser.get().getCreatedAt(), "Created at should be set");
+    }
+
+    @Test
+    void findByEmail_userDoesNotExist_returnsNull() {
+        String notExistingEmail = "not_existing_email@example.com";
+
+        Optional<User> userOptional = userRepository.findByEmail(notExistingEmail);
+        assertTrue(userOptional.isEmpty(), "user should be empty");
+    }
+
+    @Test
     void findAll_noUser_returnEmptyList(){
         List<User> users = userRepository.findAll();
         assertTrue(users.isEmpty(), "Should return empty list when no users exist");
