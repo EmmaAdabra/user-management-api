@@ -112,6 +112,19 @@ public class UserRepositoryImpl implements UserRepository
         return Optional.ofNullable(user);
     }
 
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        User user;
+        try {
+            user = jdbcTemplate.queryForObject(UserSql.SELECT_USER_BY_EMAIL, USER_ROW_MAPPER,
+                    email);
+        } catch (org.springframework.dao.EmptyResultDataAccessException e){
+            user = null;
+        }
+        return Optional.ofNullable(user);
+    }
+
     @Override
     public List<User> findAll() {
         return jdbcTemplate.query(UserSql.SELECT_ALL_USERS, USER_ROW_MAPPER);

@@ -13,6 +13,7 @@ public interface UserRepository {
     Long findIdByEmail(String email);
     User findByUsername(String username);
     Optional<User> findById(Long id);
+    Optional<User> findByEmail(String email);
     List<User> findAll();
     boolean updateUser(User user);
     boolean updatePassword(Long id, String passwordHash);
