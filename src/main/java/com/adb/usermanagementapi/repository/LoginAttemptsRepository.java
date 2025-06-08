@@ -8,5 +8,6 @@ import java.util.List;
 public interface LoginAttemptsRepository {
     public void saveLoginAttempt(Long userId, boolean success);
     public Timestamp findLastFailedLoginAttempt(Long user_id);
-    List<LoginAttempt> findRecentLogins(Long userId, int timeInterval);
+    List<LoginAttempt> findRecentLogins(Long userId, int timeInterval); // interval time is in
+    // minutes
 }
