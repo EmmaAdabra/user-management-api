@@ -7,7 +7,7 @@ import com.adb.usermanagementapi.dto.response.UserResponseDTO;
 import com.adb.usermanagementapi.exception.DuplicateResourceException;
 import com.adb.usermanagementapi.exception.UserNotFoundException;
 import com.adb.usermanagementapi.model.User;
-import com.adb.usermanagementapi.model.UserMapper;
+import com.adb.usermanagementapi.mapper.UserMapper;
 import com.adb.usermanagementapi.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.mindrot.jbcrypt.BCrypt;

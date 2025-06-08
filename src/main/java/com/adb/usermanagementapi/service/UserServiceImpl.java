@@ -7,7 +7,7 @@ import com.adb.usermanagementapi.exception.DuplicateResourceException;
 import com.adb.usermanagementapi.exception.UserNotFoundException;
 import com.adb.usermanagementapi.model.User;
 import com.adb.usermanagementapi.repository.UserRepository;
-import com.adb.usermanagementapi.model.UserMapper;
+import com.adb.usermanagementapi.mapper.UserMapper;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

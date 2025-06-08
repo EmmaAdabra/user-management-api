@@ -1,8 +1,8 @@
-package com.adb.usermanagementapi.model;
+package com.adb.usermanagementapi.mapper;
 
 import com.adb.usermanagementapi.dto.request.UserCreateRequestDTO;
 import com.adb.usermanagementapi.dto.response.UserResponseDTO;
-import org.springframework.context.annotation.Configuration;
+import com.adb.usermanagementapi.model.User;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
