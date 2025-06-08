@@ -40,6 +40,10 @@ public class User {
         return createdAt;
     }
 
+    public void setLocked(boolean locked) {
+        isLocked = locked;
+    }
+
     public boolean isLocked() {
         return isLocked;
     }
