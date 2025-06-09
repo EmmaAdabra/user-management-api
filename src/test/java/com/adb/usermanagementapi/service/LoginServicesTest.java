@@ -4,7 +4,7 @@ import com.adb.usermanagementapi.config.TestLoginServiceConfig;
 import com.adb.usermanagementapi.dto.request.LoginRequestDTO;
 import com.adb.usermanagementapi.dto.response.UserResponseDTO;
 import com.adb.usermanagementapi.exception.InvalidLoginCredentialsException;
-import com.adb.usermanagementapi.exception.InvalidPassword;
+import com.adb.usermanagementapi.exception.InvalidPasswordException;
 import com.adb.usermanagementapi.exception.UserAccountLockedException;
 import com.adb.usermanagementapi.exception.UserNotFoundException;
 import com.adb.usermanagementapi.mapper.UserMapper;
@@ -119,7 +119,7 @@ public class LoginServicesTest {
         User user = TestUtils.getUser(email, hashedPassword, false);
 
         when(userRepository.findByEmail(loginRequestDTO.getEmail())).thenReturn(Optional.of(user));
-        doThrow(new InvalidPassword("Invalid password")).when(passwordValidator).vaidate(any(User.class),
+        doThrow(new InvalidPasswordException("Invalid password")).when(passwordValidator).validate(any(User.class),
                 eq(wrongPassword));
         doNothing().when(loginAttemptsRepository).saveLoginAttempt(user.getId(), false);
 
@@ -135,7 +135,7 @@ public class LoginServicesTest {
         verify(userRepository).findByEmail(loginRequestDTO.getEmail());
         verify(loginAttemptsRepository).findRecentLogins(user.getId(), LOCKED_INTERVAL);
         verify(loginAttemptsRepository).saveLoginAttempt(user.getId(), false);
-        verify(passwordValidator).vaidate(any(User.class),
+        verify(passwordValidator).validate(any(User.class),
                 eq(wrongPassword));
     }
 

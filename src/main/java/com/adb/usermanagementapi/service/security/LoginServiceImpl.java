@@ -3,7 +3,7 @@ package com.adb.usermanagementapi.service.security;
 import com.adb.usermanagementapi.dto.request.LoginRequestDTO;
 import com.adb.usermanagementapi.dto.response.UserResponseDTO;
 import com.adb.usermanagementapi.exception.InvalidLoginCredentialsException;
-import com.adb.usermanagementapi.exception.InvalidPassword;
+import com.adb.usermanagementapi.exception.InvalidPasswordException;
 import com.adb.usermanagementapi.exception.UserAccountLockedException;
 import com.adb.usermanagementapi.exception.UserNotFoundException;
 import com.adb.usermanagementapi.mapper.UserMapper;
@@ -11,8 +11,6 @@ import com.adb.usermanagementapi.model.User;
 import com.adb.usermanagementapi.model.login.LoginAttempt;
 import com.adb.usermanagementapi.repository.LoginAttemptsRepository;
 import com.adb.usermanagementapi.repository.UserRepository;
-import com.adb.usermanagementapi.service.security.LoginService;
-import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -71,8 +69,8 @@ public class LoginServiceImpl implements LoginService {
 
     private void validatePassword(User user, String plainPassword){
         try {
-            passwordValidator.vaidate(user, plainPassword);
-        } catch (InvalidPassword e){
+            passwordValidator.validate(user, plainPassword);
+        } catch (InvalidPasswordException e){
             loginAttemptsRepository.saveLoginAttempt(user.getId(), false);
             int failedLoginCount = enforceAccountLockOnLimitExceeded(user);
             int remainingTrial = MAX_FAILED_LOGIN_ATTEMPTS - failedLoginCount;
