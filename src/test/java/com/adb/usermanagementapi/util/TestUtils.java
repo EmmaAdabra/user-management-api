@@ -16,4 +16,8 @@ public class TestUtils {
     public static User getUser(String username, String email, String passwordHash){
         return new User(null, username, email, passwordHash, LocalDateTime.now(), false);
     }
+
+    public static User getUser(String email, String passwordHash, boolean lockStatus){
+        return new User(1L, "username", email, passwordHash, LocalDateTime.now(), lockStatus);
+    }
 }
