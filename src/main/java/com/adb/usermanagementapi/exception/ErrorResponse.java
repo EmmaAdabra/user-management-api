@@ -7,10 +7,10 @@ public class ErrorResponse {
     private final String message;
     private final LocalDateTime timestamp;
 
-    public ErrorResponse(String errorCode, String message, LocalDateTime timestamp) {
+    public ErrorResponse(String errorCode, String message) {
         this.errorCode = errorCode;
         this.message = message;
-        this.timestamp = timestamp;
+        this.timestamp = LocalDateTime.now();
     }
 
     public String getErrorCode() {
