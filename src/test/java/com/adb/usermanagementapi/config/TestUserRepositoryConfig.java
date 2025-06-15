@@ -14,6 +14,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import javax.sql.DataSource;
 
 @Configuration
+@ComponentScan(basePackageClasses = UserRepositoryImpl.class)
 public class TestUserRepositoryConfig {
     // adding h2 database bean
     @Bean
@@ -28,15 +29,5 @@ public class TestUserRepositoryConfig {
     @Bean
     public JdbcTemplate jdbcTemplate(DataSource dataSource){
         return new JdbcTemplate(dataSource);
-    }
-
-    @Bean
-    public UserRepository userRepository(JdbcTemplate jdbcTemplate){
-        return new UserRepositoryImpl(jdbcTemplate);
-    }
-
-    @Bean
-    public LoginAttemptsRepository loginAttemptsRepository(JdbcTemplate jdbcTemplate){
-        return new LoginAttemptsRepositoryImpl(jdbcTemplate);
     }
 }
