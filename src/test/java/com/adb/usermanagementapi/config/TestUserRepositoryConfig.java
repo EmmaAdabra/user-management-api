@@ -1,8 +1,5 @@
 package com.adb.usermanagementapi.config;
 
-import com.adb.usermanagementapi.repository.LoginAttemptsRepository;
-import com.adb.usermanagementapi.repository.LoginAttemptsRepositoryImpl;
-import com.adb.usermanagementapi.repository.UserRepository;
 import com.adb.usermanagementapi.repository.UserRepositoryImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
