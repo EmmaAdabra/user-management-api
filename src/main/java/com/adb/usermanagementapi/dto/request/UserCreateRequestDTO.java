@@ -21,7 +21,7 @@ public class UserCreateRequestDTO {
             message = "Password must be at least 8 characters long, include one uppercase and one special character"
     )
     @Size(max = 30, message = "password should not exceed 30 character")
-    private String plainPassword;
+    private String password;
 
 
     // Getters and Setters
@@ -41,11 +41,11 @@ public class UserCreateRequestDTO {
         this.email = email;
     }
 
-    public String getPlainPassword() {
-        return plainPassword;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPlainPassword(String plainPassword) {
-        this.plainPassword = plainPassword;
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

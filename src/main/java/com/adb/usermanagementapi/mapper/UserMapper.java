@@ -34,7 +34,7 @@ public class UserMapper {
                 null,
                 userCreateRequestDTO.getUsername(),
                 userCreateRequestDTO.getEmail(),
-                userCreateRequestDTO.getPlainPassword(),
+                userCreateRequestDTO.getPassword(),
                 LocalDateTime.now(),
                 false
         );

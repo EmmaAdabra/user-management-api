@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // hash password
-        String hashedPassword = BCrypt.hashpw(request.getPlainPassword(), BCrypt.gensalt(12));
+        String hashedPassword = BCrypt.hashpw(request.getPassword(), BCrypt.gensalt(12));
         User newUser = userMapper.toUser(request, hashedPassword);
         User savedUser = userRepository.save(newUser);
         return userMapper.toUserResponseDTO(savedUser);

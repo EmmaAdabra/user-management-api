@@ -46,7 +46,7 @@ public class UserServiceTest {
 
         requestDTO.setUsername(username);
         requestDTO.setEmail(email);
-        requestDTO.setPlainPassword(password);
+        requestDTO.setPassword(password);
 
         when(userRepository.existsByUsername(username)).thenReturn(false);
         when(userRepository.existsByEmail(email)).thenReturn(false);
@@ -79,7 +79,7 @@ public class UserServiceTest {
         UserCreateRequestDTO requestDTO = new UserCreateRequestDTO();
         requestDTO.setUsername("existing_user");
         requestDTO.setEmail("test_user@example.com");
-        requestDTO.setPlainPassword("plain_password");
+        requestDTO.setPassword("plain_password");
         when(userRepository.existsByUsername(requestDTO.getUsername())).thenReturn(true);
 
         // Act
