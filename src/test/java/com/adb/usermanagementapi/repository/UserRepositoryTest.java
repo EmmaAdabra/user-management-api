@@ -3,7 +3,6 @@ package com.adb.usermanagementapi.repository;
 import com.adb.usermanagementapi.config.TestUserRepositoryConfig;
 import com.adb.usermanagementapi.exception.UserNotFoundException;
 import com.adb.usermanagementapi.model.User;
-import com.adb.usermanagementapi.repository.UserRepository;
 import com.adb.usermanagementapi.util.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
