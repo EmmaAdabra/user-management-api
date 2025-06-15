@@ -28,9 +28,4 @@ public class AppConfig {
     public JdbcTemplate jdbcTemplate(DataSource dataSource){
         return new JdbcTemplate(dataSource);
     }
-
-    @Bean
-    public UserRepository userRepository(JdbcTemplate jdbcTemplate){
-        return new UserRepositoryImpl(jdbcTemplate);
-    }
 }
