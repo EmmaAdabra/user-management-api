@@ -4,12 +4,14 @@ import com.adb.usermanagementapi.model.login.LoginAttempt;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
+@Repository
 public class LoginAttemptsRepositoryImpl implements LoginAttemptsRepository{
     private final JdbcTemplate jdbcTemplate;
     private static final String SELECT_RECENT_LOGIN_WITHIN_GIVEN_TIME =  "SELECT id, user_id, " +
