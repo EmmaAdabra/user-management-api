@@ -1,15 +1,24 @@
 package com.adb.usermanagementapi.exception;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 public class ErrorResponse {
-    private final String errorCode;
-    private final String message;
-    private final LocalDateTime timestamp;
+    private String errorCode;
+    private String message;
+    private LocalDateTime timestamp;
+    private Map<String, String> details;
 
     public ErrorResponse(String errorCode, String message) {
         this.errorCode = errorCode;
         this.message = message;
+        this.timestamp = LocalDateTime.now();
+    }
+
+    public ErrorResponse(String errorCode, String message, Map<String, String> details) {
+        this.errorCode = errorCode;
+        this.message = message;
+        this.details = details;
         this.timestamp = LocalDateTime.now();
     }
 
@@ -23,5 +32,25 @@ public class ErrorResponse {
 
     public LocalDateTime getTimestamp() {
         return timestamp;
+    }
+
+    public Map<String, String> getDetails() {
+        return details;
+    }
+
+    public void setErrorCode(String errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public void setDetails(Map<String, String> details) {
+        this.details = details;
     }
 }
