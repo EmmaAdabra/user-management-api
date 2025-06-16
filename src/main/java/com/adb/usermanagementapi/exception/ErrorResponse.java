@@ -30,13 +30,14 @@ public class ErrorResponse {
         return message;
     }
 
+    public Map<String, String> getDetails() {
+        return details;
+    }
+
     public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
-    public Map<String, String> getDetails() {
-        return details;
-    }
 
     public void setErrorCode(String errorCode) {
         this.errorCode = errorCode;
@@ -46,11 +47,11 @@ public class ErrorResponse {
         this.message = message;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
-    }
-
     public void setDetails(Map<String, String> details) {
         this.details = details;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
     }
 }
