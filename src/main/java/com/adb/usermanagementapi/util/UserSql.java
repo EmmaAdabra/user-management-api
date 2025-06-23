@@ -18,7 +18,7 @@ public class UserSql {
     public static final String SELECT_USER_BY_EMAIL = "SELECT id, username, email, " +
             "password_hash, created_at, is_locked FROM users WHERE email = ?";
     public static final String SELECT_ALL_USERS = "SELECT id, username, email, password_hash, " +
-            "created_at, is_locked FROM users";
+            "created_at, is_locked FROM users ORDER BY id LIMIT ? OFFSET ?";
     public static final String UPDATE_USER_USERNAME_EMAIL_BY_ID = "UPDATE users SET username = ?," +
             " email = ? WHERE id = ?";
     public static final String UPDATE_USER_PASSWORD_BY_ID = "UPDATE users SET password_hash" +
