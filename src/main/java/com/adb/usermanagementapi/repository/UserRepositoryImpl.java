@@ -128,8 +128,9 @@ public class UserRepositoryImpl implements UserRepository
     }
 
     @Override
-    public List<User> findAll() {
-        return jdbcTemplate.query(UserSql.SELECT_ALL_USERS, USER_ROW_MAPPER);
+    public List<User> findAll(int page, int size) {
+        int offset = page * size;
+        return jdbcTemplate.query(UserSql.SELECT_ALL_USERS, USER_ROW_MAPPER, size, offset);
     }
 
     @Override
