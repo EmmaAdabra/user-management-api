@@ -281,18 +281,22 @@ public class UserRepositoryTest {
 
     @Test
     void findAll_noUser_returnEmptyList(){
-        List<User> users = userRepository.findAll();
+        int page = 0;
+        int size = 10;
+        List<User> users = userRepository.findAll(page, size);
         assertTrue(users.isEmpty(), "Should return empty list when no users exist");
     }
 
     @Test
     void findAll_multipleUsers_returnsAllUsers() {
         // Arrange
+        int page = 0;
+        int size = 10;
         userRepository.save(TestUtils.getUser("user1", "user1@example.com", "passwordhash1"));
         userRepository.save(TestUtils.getUser("user2", "user2@example.com", "passwordhash2"));
 
         // Act
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.findAll(page, size);
 
         // Assert
         assertEquals(2, users.size(), "users be total of two users");
