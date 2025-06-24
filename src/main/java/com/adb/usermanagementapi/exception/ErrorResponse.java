@@ -6,8 +6,8 @@ import java.util.Map;
 public class ErrorResponse {
     private String errorCode;
     private String message;
-    private LocalDateTime timestamp;
     private Map<String, String> details;
+    private LocalDateTime timestamp;
 
     public ErrorResponse(String errorCode, String message) {
         this.errorCode = errorCode;
