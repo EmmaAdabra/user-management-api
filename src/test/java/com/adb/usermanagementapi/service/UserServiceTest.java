@@ -26,6 +26,8 @@ import static org.mockito.Mockito.*;
 
 @SpringJUnitConfig(TestUserServiceConfig.class)
 public class UserServiceTest {
+    private final int PAGE = 0;
+    private final int SIZE = 10;
     @Autowired
     private UserService userService;
 
@@ -334,19 +336,19 @@ public class UserServiceTest {
 
         List<User> userList = List.of(user1,user2);
 
-        when(userRepository.findAll()).thenReturn(userList);
+        when(userRepository.findAll(PAGE, SIZE)).thenReturn(userList);
         when(userMapper.toUserResponseDTO(user1)).thenReturn(dto1);
         when(userMapper.toUserResponseDTO(user2)).thenReturn(dto2);
 
         // Act
-        List<UserResponseDTO> result = userService.getAllUsers();
+        List<UserResponseDTO> result = userService.getAllUsers(PAGE, SIZE);
 
         // Assert
         assertEquals(2, result.size());
         assertTrue(result.contains(dto1));
         assertTrue(result.contains(dto2));
 
-        verify(userRepository).findAll();
+        verify(userRepository).findAll(PAGE, SIZE);
         verify(userMapper).toUserResponseDTO(user1);
         verify(userMapper).toUserResponseDTO(user2);
     }
@@ -354,14 +356,14 @@ public class UserServiceTest {
     @Test
     void getAllUsers_returnsEmptyList(){
         // Arrange
-        when(userRepository.findAll()).thenReturn(Collections.emptyList());
+        when(userRepository.findAll(PAGE, SIZE)).thenReturn(Collections.emptyList());
 
         // Act
-        List<UserResponseDTO> result = userService.getAllUsers();
+        List<UserResponseDTO> result = userService.getAllUsers(PAGE, SIZE);
 
         // Assert
         assertTrue(result.isEmpty());
-        verify(userRepository).findAll();
+        verify(userRepository).findAll(PAGE, SIZE);
         verifyNoInteractions(userMapper);
     }
 
