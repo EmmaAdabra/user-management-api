@@ -11,25 +11,24 @@ import com.adb.usermanagementapi.model.User;
 import com.adb.usermanagementapi.model.login.LoginAttempt;
 import com.adb.usermanagementapi.repository.LoginAttemptsRepository;
 import com.adb.usermanagementapi.repository.UserRepository;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Service
+//@Service
 public class LoginServiceImpl implements LoginService {
     private static final int LOCKED_INTERVAL = 1; // in minutes
     private static final int MAX_FAILED_LOGIN_ATTEMPTS = 4;
     private final UserRepository userRepository;
     private final LoginAttemptsRepository loginAttemptsRepository;
     private final UserMapper userMapper;
-    private final PasswordValidator passwordValidator;
+    private final PasswordHasher passwordValidator;
 
     public LoginServiceImpl(
             LoginAttemptsRepository loginAttemptsRepository,
             UserRepository userRepository,
             UserMapper userMapper,
-            PasswordValidator passwordValidator
+            PasswordHasher passwordValidator
     )
     {
         this.userRepository = userRepository;
