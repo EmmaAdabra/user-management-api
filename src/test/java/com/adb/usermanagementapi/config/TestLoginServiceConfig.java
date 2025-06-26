@@ -6,8 +6,7 @@ import com.adb.usermanagementapi.repository.LoginAttemptsRepository;
 import com.adb.usermanagementapi.repository.UserRepository;
 import com.adb.usermanagementapi.service.security.LoginService;
 import com.adb.usermanagementapi.service.security.LoginServiceImpl;
-import com.adb.usermanagementapi.service.security.PasswordValidator;
-import org.mockito.Mockito;
+import com.adb.usermanagementapi.service.security.PasswordHasher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -31,8 +30,8 @@ public class TestLoginServiceConfig {
     }
 
     @Bean
-    public PasswordValidator passwordValidator(){
-        return mock(PasswordValidator.class);
+    public PasswordHasher passwordValidator(){
+        return mock(PasswordHasher.class);
     }
 
     @Bean
@@ -40,7 +39,7 @@ public class TestLoginServiceConfig {
             LoginAttemptsRepository loginAttemptsRepository,
             UserRepository userRepository,
             UserMapper userMapper,
-            PasswordValidator passwordValidator
+            PasswordHasher passwordValidator
             ){
         return new LoginServiceImpl(loginAttemptsRepository, userRepository, userMapper, passwordValidator);
     }
