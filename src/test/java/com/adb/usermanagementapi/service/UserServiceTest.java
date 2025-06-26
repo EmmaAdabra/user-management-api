@@ -6,11 +6,13 @@ import com.adb.usermanagementapi.dto.request.UserCreateRequestDTO;
 import com.adb.usermanagementapi.dto.request.UserUpdateDTO;
 import com.adb.usermanagementapi.dto.response.UserResponseDTO;
 import com.adb.usermanagementapi.exception.DuplicateResourceException;
+import com.adb.usermanagementapi.exception.InvalidCurrentPasswordException;
 import com.adb.usermanagementapi.exception.UserNotFoundException;
 import com.adb.usermanagementapi.model.User;
 import com.adb.usermanagementapi.mapper.UserMapper;
 import com.adb.usermanagementapi.repository.UserRepository;
 import com.adb.usermanagementapi.service.security.PasswordHasher;
+import com.adb.usermanagementapi.util.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -408,6 +410,29 @@ public class UserServiceTest {
                 () -> userService.updatePassword(noneExistingUserId, dto));
 
         assertEquals("User not found", ex.getMessage());
+        verify(userRepository, never()).updatePassword(anyLong(), anyString());
+    }
+
+    @Test
+    void updatePassword_withWrongCurrentPassword_throwsException(){
+        //Arrange
+        Long userId = 1L;
+        String hashPassword = new PasswordHasher().hashPassword("oldPassword123");
+        String wrongOldPassword = "wrongOldPassword123";
+        User user = TestUtils.getUser("username", "user@example.com", hashPassword);
+
+        ChangePasswordRequestDTO dto =  new ChangePasswordRequestDTO();
+        dto.setNewPassword("newPassword123");
+        dto.setOldPassword(wrongOldPassword);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        doThrow(new InvalidCurrentPasswordException("Current password mismatch")).when(passwordHasher).validate(user,
+                dto.getOldPassword());
+        //Act and assert
+        InvalidCurrentPasswordException ex = assertThrows(InvalidCurrentPasswordException.class,
+                () -> userService.updatePassword(userId, dto));
+
+        assertEquals("Current password mismatch", ex.getMessage());
         verify(userRepository, never()).updatePassword(anyLong(), anyString());
     }
 
