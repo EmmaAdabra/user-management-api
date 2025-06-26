@@ -39,8 +39,8 @@ public class TestLoginServiceConfig {
             LoginAttemptsRepository loginAttemptsRepository,
             UserRepository userRepository,
             UserMapper userMapper,
-            PasswordHasher passwordValidator
+            PasswordHasher passwordHasher
             ){
-        return new LoginServiceImpl(loginAttemptsRepository, userRepository, userMapper, passwordValidator);
+        return new LoginServiceImpl(loginAttemptsRepository, userRepository, userMapper, passwordHasher);
     }
 }
