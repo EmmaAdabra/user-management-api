@@ -1,6 +1,7 @@
 package com.adb.usermanagementapi.service;
 
 import com.adb.usermanagementapi.config.TestUserServiceConfig;
+import com.adb.usermanagementapi.dto.request.ChangePasswordRequestDTO;
 import com.adb.usermanagementapi.dto.request.UserCreateRequestDTO;
 import com.adb.usermanagementapi.dto.request.UserUpdateDTO;
 import com.adb.usermanagementapi.dto.response.UserResponseDTO;
@@ -9,6 +10,7 @@ import com.adb.usermanagementapi.exception.UserNotFoundException;
 import com.adb.usermanagementapi.model.User;
 import com.adb.usermanagementapi.mapper.UserMapper;
 import com.adb.usermanagementapi.repository.UserRepository;
+import com.adb.usermanagementapi.service.security.PasswordHasher;
 import org.junit.jupiter.api.Test;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,9 @@ public class UserServiceTest {
 
     @MockitoBean
     private UserMapper userMapper;
+
+    @MockitoBean
+    private PasswordHasher passwordHasher;
 
     @Test
     void createUser_success_returnsUserResponseDTO(){
@@ -372,11 +377,16 @@ public class UserServiceTest {
         // Arrange
         Long userId = 1L;
         User mockUser = mock(User.class);
+        ChangePasswordRequestDTO dto =  new ChangePasswordRequestDTO();
+        dto.setNewPassword("newPassword123");
+        dto.setOldPassword("oldPassword123");
+
         when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser));
         when(userRepository.updatePassword(eq(userId), anyString())).thenReturn(true);
+        when(passwordHasher.hashPassword(anyString())).thenReturn("hashedPassword123");
 
         // Act
-        userService.updatePassword(userId, "new_password");
+        userService.updatePassword(userId, dto);
 
         // Assert
         verify(userRepository).updatePassword(eq(userId), anyString());
@@ -385,12 +395,17 @@ public class UserServiceTest {
 
     @Test
     void updatePassword_invalidUserId_throwsException(){
+        //Arrange
         Long noneExistingUserId = 90L;
+        ChangePasswordRequestDTO dto =  new ChangePasswordRequestDTO();
+        dto.setNewPassword("newPassword123");
+        dto.setOldPassword("oldPassword123");
 
         when(userRepository.findById(noneExistingUserId)).thenReturn(Optional.ofNullable(null));
 
+        //Act and assert
         UserNotFoundException ex = assertThrows(UserNotFoundException.class,
-                () -> userService.updatePassword(noneExistingUserId, "new_password"));
+                () -> userService.updatePassword(noneExistingUserId, dto));
 
         assertEquals("User not found", ex.getMessage());
         verify(userRepository, never()).updatePassword(anyLong(), anyString());
