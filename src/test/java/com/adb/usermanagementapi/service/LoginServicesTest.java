@@ -13,7 +13,7 @@ import com.adb.usermanagementapi.model.login.LoginAttempt;
 import com.adb.usermanagementapi.repository.LoginAttemptsRepository;
 import com.adb.usermanagementapi.repository.UserRepository;
 import com.adb.usermanagementapi.service.security.LoginService;
-import com.adb.usermanagementapi.service.security.PasswordValidator;
+import com.adb.usermanagementapi.service.security.PasswordHasher;
 import com.adb.usermanagementapi.util.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,7 +46,7 @@ public class LoginServicesTest {
     private UserMapper userMapper;
 
     @Autowired
-    private PasswordValidator passwordValidator;
+    private PasswordHasher passwordValidator;
 
     private LoginRequestDTO createLoginRequestDTO(String email, String password){
         LoginRequestDTO dto = new LoginRequestDTO();
