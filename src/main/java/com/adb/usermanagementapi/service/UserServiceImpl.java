@@ -102,9 +102,7 @@ public class UserServiceImpl implements UserService {
             throw new InvalidCurrentPasswordException("Current password mismatch");
         }
 
-        if (dto.getOldPassword().equals(dto.getNewPassword())) {
-            throw new InvalidPasswordException("New password must be different from the current password");
-        }
+        //if (dto.getOldPassword().equals(dto.getNewPassword())) {//}
 
         String hashedPassword = passwordHasher.hashPassword(dto.getNewPassword());
         System.out.println("Test value: " + dto.getNewPassword());
