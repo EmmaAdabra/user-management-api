@@ -68,7 +68,10 @@ public class LoginServicesTest {
 
         LoginRequestDTO loginRequestDTO = createLoginRequestDTO(email, plainPassword);
 
-        String hashedPassword = BCrypt.hashpw(plainPassword, BCrypt.gensalt(12));
+        PasswordHasher passwordHasher = new PasswordHasher();
+
+
+        String hashedPassword = passwordHasher.hashPassword(plainPassword);
 
         User user = TestUtils.getUser(email, hashedPassword, false);
 
