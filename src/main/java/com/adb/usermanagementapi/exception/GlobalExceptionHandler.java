@@ -42,4 +42,11 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
+
+    @ExceptionHandler(InvalidCurrentPasswordException.class)
+    public ResponseEntity<ErrorResponse> handleChangeOfPasswordMismatch(InvalidCurrentPasswordException ex){
+        ErrorResponse response = new ErrorResponse("PASSWORD_MISMATCH", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
 }
