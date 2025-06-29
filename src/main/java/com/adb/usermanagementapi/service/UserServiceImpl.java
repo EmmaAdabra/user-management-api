@@ -13,6 +13,8 @@ import com.adb.usermanagementapi.repository.UserRepository;
 import com.adb.usermanagementapi.mapper.UserMapper;
 import com.adb.usermanagementapi.service.security.PasswordHasher;
 import org.mindrot.jbcrypt.BCrypt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordHasher passwordHasher;
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     public UserServiceImpl(UserRepository userRepository, UserMapper userMapper,
                            PasswordHasher passordHasher) {
@@ -35,11 +38,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO createUser(UserCreateRequestDTO request) {
+        logger.info("Attempting to register user with username - {}", request.getUsername());
         if(userRepository.existsByUsername(request.getUsername())){
+            logger.warn("Registration failed, username - '{}', already exist",
+                    request.getUsername());
             throw new DuplicateResourceException("Username already exist");
         }
 
         if(userRepository.existsByEmail(request.getEmail())){
+            logger.warn("Registration failed, email - {}, already exist", request.getEmail());
             throw new DuplicateResourceException("Email already exist");
         }
 
@@ -47,6 +54,7 @@ public class UserServiceImpl implements UserService {
         String hashedPassword = BCrypt.hashpw(request.getPassword(), BCrypt.gensalt(12));
         User newUser = userMapper.toUser(request, hashedPassword);
         User savedUser = userRepository.save(newUser);
+        logger.info("User registered successfully with ID - {}", savedUser.getId());
         return userMapper.toUserResponseDTO(savedUser);
     }
 
