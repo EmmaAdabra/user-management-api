@@ -23,6 +23,14 @@ public class UserCreateRequestDTO {
     @Size(max = 30, message = "password should not exceed 30 character")
     private String password;
 
+    @Override
+    public String toString() {
+        return "UserCreateRequestDTO{" +
+                "username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + "****" + '\'' +
+                '}';
+    }
 
     // Getters and Setters
     public String getUsername() {
