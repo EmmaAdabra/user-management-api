@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO createUser(UserCreateRequestDTO request) {
-        logger.info("Attempting to register user with username - {}", request.getUsername());
+        logger.info("Attempting to register user with username - '{}'", request.getUsername());
         if(userRepository.existsByUsername(request.getUsername())){
             logger.warn("Registration failed, username - '{}', already exist",
                     request.getUsername());
