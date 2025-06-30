@@ -28,7 +28,7 @@ public class UserCreateRequestDTO {
         return "UserCreateRequestDTO{" +
                 "username='" + username + '\'' +
                 ", email='" + email + '\'' +
-                ", password='" + "****" + '\'' +
+                ", password='" + "********" + '\'' +
                 '}';
     }
 
