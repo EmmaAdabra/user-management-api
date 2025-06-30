@@ -8,9 +8,10 @@ public class ChangePasswordRequestDTO {
     private String oldPassword;
 
     @NotBlank(message = "Username must not be blank")
-    @Pattern(regexp = "^(?![_.,-])[A-Za-z0-9._,-]+(?<![_.,-])$",
-            message = "Username can contain letters, digits, '_', '.', ',' or '-', " +
-                    "but not start or end with them"
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+=\\\\\\\\-{}:;\"'<>,.?/])" +
+            ".{8,}$",
+            message = "Password must be at least 8 characters long, include one uppercase, one " +
+                    "number and one special character"
     )
     private String newPassword;
 

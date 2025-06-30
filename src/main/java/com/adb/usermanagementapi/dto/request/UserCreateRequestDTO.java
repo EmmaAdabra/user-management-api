@@ -16,9 +16,10 @@ public class UserCreateRequestDTO {
     private String email;
 
     @NotBlank(message = "Password is should not be null")
-    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[!@#$%^&*()_+=\\\\\\\\-{}:;\"'<>,.?/])" +
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+=\\\\\\\\-{}:;\"'<>,.?/])" +
             ".{8,}$",
-            message = "Password must be at least 8 characters long, include one uppercase and one special character"
+            message = "Password must be at least 8 characters long, include one uppercase, one " +
+                    "number and one special character"
     )
     @Size(max = 30, message = "password should not exceed 30 character")
     private String password;
