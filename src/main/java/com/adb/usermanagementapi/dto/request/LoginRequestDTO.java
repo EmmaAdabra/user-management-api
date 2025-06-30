@@ -8,6 +8,14 @@ public class LoginRequestDTO {
     @NotBlank(message = "Password should not be blank")
     private String plainPassword;
 
+    @Override
+    public String toString() {
+        return "LoginRequestDTO{" +
+                "email='" + email + '\'' +
+                ", plainPassword='" + "********" + '\'' +
+                '}';
+    }
+
     // Getters and setters
     public String getEmail() {
         return email;

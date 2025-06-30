@@ -14,6 +14,14 @@ public class ChangePasswordRequestDTO {
     )
     private String newPassword;
 
+    @Override
+    public String toString() {
+        return "ChangePasswordRequestDTO{" +
+                "oldPassword='" + "********" + '\'' +
+                ", newPassword='" + "********" + '\'' +
+                '}';
+    }
+
     public String getOldPassword() {
         return oldPassword;
     }

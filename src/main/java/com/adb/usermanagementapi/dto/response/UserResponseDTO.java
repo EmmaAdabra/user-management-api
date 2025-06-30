@@ -24,6 +24,17 @@ public class UserResponseDTO {
         this.createdAt = createdAt;
     }
 
+    @Override
+    public String toString() {
+        return "UserResponseDTO{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", isLocked=" + isLocked +
+                ", createdAt=" + createdAt +
+                '}';
+    }
+
     // getters and setters
     public void setId(Long id) {
         this.id = id;

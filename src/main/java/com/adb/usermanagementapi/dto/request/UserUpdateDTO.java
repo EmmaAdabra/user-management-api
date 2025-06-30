@@ -13,6 +13,14 @@ public class UserUpdateDTO {
     @Email(message = "Should be a valid email")
     private String email;
 
+    @Override
+    public String toString() {
+        return "UserUpdateDTO{" +
+                "username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
+
     public String getUsername() {
         return username;
     }
