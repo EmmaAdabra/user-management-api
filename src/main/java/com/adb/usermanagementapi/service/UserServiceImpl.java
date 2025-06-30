@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
         }
 
         if(userRepository.existsByEmail(request.getEmail())){
-            logger.warn("Registration failed, email - {}, already exist", request.getEmail());
+            logger.warn("Registration failed, email - '{}', already exist", request.getEmail());
             throw new DuplicateResourceException("Email already exist");
         }
 
@@ -60,16 +60,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO updateUser(Long id, UserUpdateDTO request) {
+        logger.info("Attempting to update user data with ID - {}", id);
         User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> {
+                    logger.warn("User update failed, no user found with ID - {}", id);
+                    return new UserNotFoundException("User not found");
+                });
 
         if(userRepository.existsByUsername(request.getUsername())
                 && !existingUser.getUsername().equals(request.getUsername())){
+            logger.warn("Update failed, username - '{}', already exist",
+                    request.getUsername());
             throw new DuplicateResourceException("Username already exist");
         }
 
         if(userRepository.existsByEmail(request.getEmail())
                 && !existingUser.getEmail().equals(request.getEmail())){
+            logger.warn("Update failed, email - '{}', already exist", request.getEmail());
             throw new DuplicateResourceException("Email already exist");
         }
 
@@ -82,47 +89,67 @@ public class UserServiceImpl implements UserService {
                 existingUser.isLocked());
 
         userRepository.updateUser(updatedUser);
+        logger.info("User updated successfully with ID - {}", id);
 
         return userMapper.toUserResponseDTO(updatedUser);
     }
 
     @Override
     public UserResponseDTO getUserById(Long id) {
+        logger.info("Attempting to get user with ID - {}", id);
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> {
+                    logger.warn("Failed to get user, no user found with the ID - {}", id);
+                    return new UserNotFoundException("User not found");
+                });
+
+        logger.info("Successfully get user with ID - {}", id);
         return userMapper.toUserResponseDTO(user);
     }
 
     @Override
     public List<UserResponseDTO> getAllUsers(int page, int size) {
         page = page == 1 ? 0 : page - 1;
+        logger.info("Getting all users in page - {}", page);
         return userRepository.findAll(page, size).stream().map(userMapper::toUserResponseDTO).collect(
                 Collectors.toList());
     }
 
     @Override
     public void updatePassword(Long id, ChangePasswordRequestDTO dto) {
+        logger.info("Attempting to change user password with ID - {}", id);
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> {
+                    logger.warn("Failed to change password, no user with the ID - {}", id);
+
+                    return new UserNotFoundException("User not found");
+                });
 
         try {
             passwordHasher.validate(user, dto.getOldPassword());
         } catch (InvalidPasswordException e) {
+            logger.warn("Failed to change password, current password mismatch for user ID - {}",
+                    id);
             throw new InvalidCurrentPasswordException("Current password mismatch");
         }
 
         //if (dto.getOldPassword().equals(dto.getNewPassword())) {//}
 
         String hashedPassword = passwordHasher.hashPassword(dto.getNewPassword());
-        System.out.println("Test value: " + dto.getNewPassword());
-        System.out.println(hashedPassword);
         userRepository.updatePassword(id, hashedPassword);
+        logger.info("Password changed successfully for user with ID - {}", id);
     }
 
     @Override
     public void deleteUser(Long id) {
-        userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
+        logger.info("Attempting to delete user with ID - {}", id);
+        userRepository.findById(id).orElseThrow(() -> {
+            logger.info("Failed to delete user, no user found with ID - {}", id);
+
+            return new UserNotFoundException("User not found");
+        });
 
         userRepository.deleteUser(id);
+        logger.info("Successfully deleted user with ID - {}", id);
     }
 }
