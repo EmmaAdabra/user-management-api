@@ -1,5 +1,7 @@
 package com.adb.usermanagementapi.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -12,9 +14,11 @@ import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+    private final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<ErrorResponse> handleDuplicateResourceError(DuplicateResourceException ex){
+        logger.warn("Duplicate resources error: {}", ex.getMessage());
         ErrorResponse response = new ErrorResponse("DUPLICATE_RESOURCE", ex.getMessage());
 
         return ResponseEntity
@@ -30,6 +34,8 @@ public class GlobalExceptionHandler {
             fieldErrors.put(error.getField(), error.getDefaultMessage());
         }
 
+        logger.warn("Validation error: {}", fieldErrors);
+
         ErrorResponse response = new ErrorResponse("VALIDATION_ERROR", "Request validation " +
                 "failed", fieldErrors);
 
@@ -38,15 +44,25 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUserNotFound(UserNotFoundException ex){
+        logger.warn("User not found: {}", ex.getMessage());
         ErrorResponse response = new ErrorResponse("NOT_FOUND", ex.getMessage());
-
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
     @ExceptionHandler(InvalidCurrentPasswordException.class)
     public ResponseEntity<ErrorResponse> handleChangeOfPasswordMismatch(InvalidCurrentPasswordException ex){
+        logger.warn("Invalid current password, change attempt: {}", ex.getMessage());
         ErrorResponse response = new ErrorResponse("PASSWORD_MISMATCH", ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleUnExpectedError(Exception ex){
+        logger.error("Unexpected error occurred: ", ex);
+        ErrorResponse response = new ErrorResponse("INTERNAL_ERROR", "An unexpected error " +
+                "occurred");
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 }
