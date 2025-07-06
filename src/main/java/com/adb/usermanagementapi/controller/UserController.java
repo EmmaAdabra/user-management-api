@@ -75,7 +75,7 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<UserResponseDTO>> getAllUsers(
-            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "size", defaultValue = "5") int size,
             HttpServletRequest servletRequest
     ){
