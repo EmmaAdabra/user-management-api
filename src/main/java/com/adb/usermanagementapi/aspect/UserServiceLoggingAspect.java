@@ -12,8 +12,8 @@ import java.util.Arrays;
 
 @Component
 @Aspect
-public class ServiceLoggingAspect {
-    private static final Logger logger = LoggerFactory.getLogger(ServiceLoggingAspect.class);
+public class UserServiceLoggingAspect {
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceLoggingAspect.class);
 
     @Around("execution(* com.adb.usermanagementapi.service.UserServiceImpl.*(..))")
     public Object logUserServiceMethods(ProceedingJoinPoint joinPoint) throws Throwable {
