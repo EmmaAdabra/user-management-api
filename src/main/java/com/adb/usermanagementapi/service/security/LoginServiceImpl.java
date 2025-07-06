@@ -41,7 +41,7 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public UserResponseDTO login(LoginRequestDTO dto) {
         User user =
-                userRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new UserNotFoundException("Not a registered user"));
+                userRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new UserNotFoundException(dto.getEmail() + " - not a registered user"));
 
         if(user.isLocked()){
             checkAndUnlockIfEligible(user);
