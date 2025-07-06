@@ -11,6 +11,8 @@ import com.adb.usermanagementapi.model.User;
 import com.adb.usermanagementapi.model.login.LoginAttempt;
 import com.adb.usermanagementapi.repository.LoginAttemptsRepository;
 import com.adb.usermanagementapi.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,6 +26,7 @@ public class LoginServiceImpl implements LoginService {
     private final LoginAttemptsRepository loginAttemptsRepository;
     private final UserMapper userMapper;
     private final PasswordHasher passwordValidator;
+    private final Logger logger = LoggerFactory.getLogger(LoginServiceImpl.class);
 
     public LoginServiceImpl(
             LoginAttemptsRepository loginAttemptsRepository,
@@ -41,18 +44,24 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public UserResponseDTO login(LoginRequestDTO dto) {
         User user =
-                userRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new UserNotFoundException(dto.getEmail() + " - not a registered user"));
+                userRepository.findByEmail(dto.getEmail()).orElseThrow(() -> {
+                    logger.warn("{} - not a registered user", dto.getEmail());
+
+                    return new UserNotFoundException(dto.getEmail() + " - not a registered user");
+                });
 
         if(user.isLocked()){
             checkAndUnlockIfEligible(user);
 
             if(user.isLocked()){
+                logger.warn("User account locked - user ID: {}", user.getId());
                 throw new UserAccountLockedException("Account locked, try again later");
             }
         }
 
         validatePassword(user, dto.getPassword());
         loginAttemptsRepository.saveLoginAttempt(user.getId(), true);
+        logger.info("Login successful - user ID: {}", user.getId());
         return userMapper.toUserResponseDTO(user);
     }
 
@@ -63,6 +72,7 @@ public class LoginServiceImpl implements LoginService {
 
         if(lastFailedLogin.isBefore(maxLockedTime)){
             user.setLocked(false);
+            logger.info("Account unlocked successfully - user ID: {}", user.getId());
             userRepository.setUserLocked(user.getId(), false);
         }
     }
@@ -74,6 +84,8 @@ public class LoginServiceImpl implements LoginService {
             loginAttemptsRepository.saveLoginAttempt(user.getId(), false);
             int failedLoginCount = enforceAccountLockOnLimitExceeded(user);
             int remainingTrial = MAX_FAILED_LOGIN_ATTEMPTS - failedLoginCount;
+            logger.warn("Wrong email or password, {} trial left - user ID: {}", remainingTrial,
+                    user.getId());
             throw new InvalidLoginCredentialsException("Invalid login details, " + remainingTrial + " trial left");
         }
     }
@@ -100,6 +112,8 @@ public class LoginServiceImpl implements LoginService {
         if(failedLoginCount >= MAX_FAILED_LOGIN_ATTEMPTS) {
             user.setLocked(true);
             userRepository.setUserLocked(user.getId(), true);
+            logger.warn("Too many failed login attempt, account locked for 1 minutes - user ID: " +
+                    "{}", user.getId());
             throw new UserAccountLockedException("Too many failed login attempts, " +
                     "account locked for 1 minute");
 
