@@ -11,11 +11,12 @@ import com.adb.usermanagementapi.model.User;
 import com.adb.usermanagementapi.model.login.LoginAttempt;
 import com.adb.usermanagementapi.repository.LoginAttemptsRepository;
 import com.adb.usermanagementapi.repository.UserRepository;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-//@Service
+@Service
 public class LoginServiceImpl implements LoginService {
     private static final int LOCKED_INTERVAL = 1; // in minutes
     private static final int MAX_FAILED_LOGIN_ATTEMPTS = 4;
@@ -40,7 +41,7 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public UserResponseDTO login(LoginRequestDTO dto) {
         User user =
-                userRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new UserNotFoundException("No user found with this email"));
+                userRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new UserNotFoundException("Not a registered user"));
 
         if(user.isLocked()){
             checkAndUnlockIfEligible(user);
@@ -50,7 +51,7 @@ public class LoginServiceImpl implements LoginService {
             }
         }
 
-        validatePassword(user, dto.getPlainPassword());
+        validatePassword(user, dto.getPassword());
         loginAttemptsRepository.saveLoginAttempt(user.getId(), true);
         return userMapper.toUserResponseDTO(user);
     }
