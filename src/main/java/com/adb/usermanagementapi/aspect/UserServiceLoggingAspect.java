@@ -25,7 +25,7 @@ public class UserServiceLoggingAspect {
 
         logger.info("Entering {} with args: {}", methodName, arguments);
 
-        Long startTime = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
         try {
             Object result = joinPoint.proceed();
             Long duration = System.currentTimeMillis() - startTime;
@@ -33,7 +33,7 @@ public class UserServiceLoggingAspect {
 
             return  result;
         } catch (Exception e){
-            Long duration = System.currentTimeMillis() - startTime;
+            long duration = System.currentTimeMillis() - startTime;
             logger.info("Exception in method {} after {}ms - {}: {}", methodName,
                     duration, e.getClass().getSimpleName(), e.getMessage());
 
