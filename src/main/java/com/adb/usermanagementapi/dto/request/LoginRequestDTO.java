@@ -12,7 +12,7 @@ public class LoginRequestDTO {
     public String toString() {
         return "LoginRequestDTO{" +
                 "email='" + email + '\'' +
-                ", plainPassword='" + "********" + '\'' +
+                ", password='" + "********" + '\'' +
                 '}';
     }
 
