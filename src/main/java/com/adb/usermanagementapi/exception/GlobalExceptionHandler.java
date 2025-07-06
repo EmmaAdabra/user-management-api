@@ -73,17 +73,30 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUserNotFound(UserNotFoundException ex){
-        logger.warn("User not found - {}", ex.getMessage());
         ErrorResponse response = new ErrorResponse("NOT_FOUND", ex.getMessage());
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
     @ExceptionHandler(InvalidCurrentPasswordException.class)
     public ResponseEntity<ErrorResponse> handleChangeOfPasswordMismatch(InvalidCurrentPasswordException ex){
-        logger.warn("Invalid current password, change attempt - {}", ex.getMessage());
         ErrorResponse response = new ErrorResponse("PASSWORD_MISMATCH", ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(UserAccountLockedException.class)
+    public ResponseEntity<ErrorResponse> handlesAccountLockedException(UserAccountLockedException ex){
+        ErrorResponse response = new ErrorResponse("LOCKED_ACCOUNT", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.LOCKED).body(response);
+    }
+
+    @ExceptionHandler(InvalidLoginCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handlesInvalidLoginDetailsException(InvalidLoginCredentialsException ex){
+        ErrorResponse response = new ErrorResponse("INVALID_LOGIN", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
     @ExceptionHandler(Exception.class)
