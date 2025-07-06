@@ -6,7 +6,7 @@ public class LoginRequestDTO {
     @NotBlank(message = "Username or email must not be blank")
     private String email;
     @NotBlank(message = "Password should not be blank")
-    private String plainPassword;
+    private String password;
 
     @Override
     public String toString() {
@@ -25,11 +25,11 @@ public class LoginRequestDTO {
         this.email = email;
     }
 
-    public String getPlainPassword() {
-        return plainPassword;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPlainPassword(String plainPassword) {
-        this.plainPassword = plainPassword;
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
