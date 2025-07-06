@@ -30,15 +30,15 @@ public class UserServiceImpl implements UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     public UserServiceImpl(UserRepository userRepository, UserMapper userMapper,
-                           PasswordHasher passordHasher) {
+                           PasswordHasher passwordHasher) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
-        this.passwordHasher = passordHasher;
+        this.passwordHasher = passwordHasher;
     }
 
     @Override
     public UserResponseDTO createUser(UserCreateRequestDTO request) {
-        logger.info("Attempting to register user with username - '{}'", request.getUsername());
+        //logger.info("Attempting to register user with username - '{}'", request.getUsername());
         if(userRepository.existsByUsername(request.getUsername())){
             logger.warn("Registration failed, username - '{}', already exist",
                     request.getUsername());
@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO updateUser(Long id, UserUpdateDTO request) {
-        logger.info("Attempting to update user data with ID - {}", id);
+        //logger.info("Attempting to update user data with ID - {}", id);
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> {
                     logger.warn("User update failed, no user found with ID - {}", id);
@@ -110,14 +110,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserResponseDTO> getAllUsers(int page, int size) {
         page = page == 1 ? 0 : page - 1;
-        logger.info("Getting all users in page - {}", page);
-        return userRepository.findAll(page, size).stream().map(userMapper::toUserResponseDTO).collect(
-                Collectors.toList());
+        int offset = page * size;
+
+        List<UserResponseDTO> users = userRepository.findAll(page, size).stream()
+                .map(userMapper::toUserResponseDTO).collect(Collectors.toList());
+
+        if(users.isEmpty()){
+            logger.warn("Returning an empty users list for users from # {} - {}", offset + 1,
+                    offset + size );
+        } else {
+            logger.info("Successfully get all users from # {} - {}, total: {}",  offset + 1,
+                    offset + size, users.size());
+
+        }
+
+        return users;
     }
 
     @Override
     public void updatePassword(Long id, ChangePasswordRequestDTO dto) {
-        logger.info("Attempting to change user password with ID - {}", id);
         User user = userRepository.findById(id)
                 .orElseThrow(() -> {
                     logger.warn("Failed to change password, no user with the ID - {}", id);
@@ -142,7 +153,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long id) {
-        logger.info("Attempting to delete user with ID - {}", id);
         userRepository.findById(id).orElseThrow(() -> {
             logger.info("Failed to delete user, no user found with ID - {}", id);
 
