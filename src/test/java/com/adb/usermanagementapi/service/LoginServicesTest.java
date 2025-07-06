@@ -51,7 +51,7 @@ public class LoginServicesTest {
     private LoginRequestDTO createLoginRequestDTO(String email, String password){
         LoginRequestDTO dto = new LoginRequestDTO();
         dto.setEmail(email);
-        dto.setPlainPassword(password);
+        dto.setPassword(password);
         return dto;
     }
 
