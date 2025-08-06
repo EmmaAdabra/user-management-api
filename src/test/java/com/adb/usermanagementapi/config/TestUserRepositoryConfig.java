@@ -18,7 +18,7 @@ public class TestUserRepositoryConfig {
     public DataSource dataSource(){
         return new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
-                .addScript("schema.sql")
+                .addScript("test-schema.sql")
                 .setName("userDb")
                 .build();
     }
