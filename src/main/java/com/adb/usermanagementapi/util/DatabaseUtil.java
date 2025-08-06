@@ -22,7 +22,7 @@ public class DatabaseUtil {
             while (root.getCause() != null) {
                 root = root.getCause(); // Unwrap nested causes
             }
-            logger.error("❌ Error loading schema.sql", root);
+            logger.error("Error loading schema.sql", root);
         }
         return dataSource;
     }
