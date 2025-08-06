@@ -1,35 +1,39 @@
 package com.adb.usermanagementapi.config;
 
+import com.adb.usermanagementapi.util.DatabaseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.*;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 import javax.sql.DataSource;
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Configuration
+@PropertySource("classPath:application.properties")
 @EnableAspectJAutoProxy
 @ComponentScan(basePackages = "com.adb.usermanagementapi")
 public class AppConfig {
+    @Autowired
+    private Environment env;
     static final Logger logger = LoggerFactory.getLogger(AppConfig.class);
     @Bean
     public DataSource sqliteDatasource(){
-        String dbDir = "data";
-        String dbFile = dbDir + "/app_database.db";
-
-        File folder = new File(dbDir);
+        Path dbDir = Paths.get(env.getProperty("db.dir"));
+        String dbFile = env.getProperty("db.path");
 
          //Create db folder if it doesn't exist
-        if(!folder.exists()){
-            folder.mkdirs();
+        try {
+            Files.createDirectories(dbDir);
+            logger.info("created database dir - {}", dbDir.toAbsolutePath());
+        } catch (IOException ex){
+            logger.warn("Fail to create database dir at - {}", dbDir.toAbsolutePath());
         }
 
         DriverManagerDataSource ds = new DriverManagerDataSource();
@@ -38,26 +42,8 @@ public class AppConfig {
         ds.setUsername("");
         ds.setPassword("");
 
-         //load schema.sql
-        try {
-            ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-            populator.addScript(new ClassPathResource("schema.sql"));
-            populator.setContinueOnError(false);
-
-            logger.debug("Running DB schema.sql...");
-            DatabasePopulatorUtils.execute(populator, ds);
-            System.out.println("Completed DB script.");
-            logger.info("Completed DB script.");
-        } catch (Exception e) {
-            Throwable root = e;
-
-            while (root.getCause() != null){
-                root = root.getCause(); // Unwrap nested causes
-            }
-            logger.error("❌ Error loading schema.sql", root);
-        }
-
-        return ds;
+        //load schema.sql
+        return DatabaseUtil.initializeSchema(ds, env.getProperty("db.schema"), logger);
     }
 
     @Bean
